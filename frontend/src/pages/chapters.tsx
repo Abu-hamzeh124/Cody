@@ -1,20 +1,24 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-type Course = {
+type chapter = {
   id: string;
   name: string;
-  description: string;
+  order: number;
+  createdAt: number;
+  updatedAt: number | null;
+  courseId: string;
 };
 
-export default function CoursePage() {
-  const [courses, setCourses] = useState<Course[]>([]);
+export default function ChaptersPage() {
+  const [chapter, setChapter] = useState<chapter[]>([]);
   const navigate = useNavigate();
-
+  const { courseId } = useParams();
   useEffect(() => {
-    fetch("http://localhost:3000/api/courses")
+    fetch(`http://localhost:3000/api/courses/${courseId}`)
       .then((res) => res.json())
-      .then((data) => setCourses(data));
+      .then((data) => setChapter(data));
   }, []);
 
   const handleCourse = (id: string) => {
@@ -24,16 +28,16 @@ export default function CoursePage() {
   return (
     <div className="min-h-screen bg-gray-900 p-8">
       <h1 className="text-white text-3xl font-bold mb-8">Courses</h1>
-      {courses.map((course) => (
+      {chapter.map((chapter) => (
         <div
-          key={course.id}
+          key={chapter.id}
           className="bg-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:bg-gray-700"
         >
-          <button onClick={() => handleCourse(course.id)}>{course.name}</button>
-          <p className="text-gray-400 mt-2">{course.description}</p>
+          <button onClick={() => handleCourse(chapter.id)}>
+            {chapter.name}
+          </button>
         </div>
       ))}
     </div>
   );
 }
-
