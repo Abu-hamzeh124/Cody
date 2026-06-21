@@ -8,6 +8,7 @@ import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import ChaptersPage from "./pages/chapters";
 import LessonsPage from "./pages/lessons";
+import LessonPage from "./pages/lesson";
 
 const router = createBrowserRouter([
   { path: "/", element: <LoginPage /> },
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
   { path: "/courses", element: <CoursePage /> },
   { path: "/courses/:courseId", element: <ChaptersPage /> },
   { path: "/courses/:courseId/chapters/:chapterId", element: <LessonsPage /> },
+  { path: "/courses/:courseId/chapters/:chapterId/lessons/:lessonId", element: <LessonPage /> }
 ]);
 
 createRoot(document.getElementById("root")!).render(
