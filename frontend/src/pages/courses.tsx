@@ -12,7 +12,11 @@ export default function CoursePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/courses")
+    if (!localStorage.getItem("token")) {
+      navigate("/");
+      return;
+    }
+    fetch(`http://localhost:3000/api/courses`)
       .then((res) => res.json())
       .then((data) => setCourses(data));
   }, []);

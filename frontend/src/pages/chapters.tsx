@@ -16,6 +16,10 @@ export default function ChaptersPage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/");
+      return;
+    }
     fetch(`http://localhost:3000/api/courses/${courseId}`)
       .then((res) => res.json())
       .then((data) => setChapter(data));

@@ -17,10 +17,14 @@ type lesson = {
 };
 
 export default function LessonsPage() {
-  const [lesson, setLesson] = useState<lesson[]>([]);
   const navigate = useNavigate();
+  const [lesson, setLesson] = useState<lesson[]>([]);
   const { courseId, chapterId } = useParams();
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/");
+      return;
+    }
     fetch(`http://localhost:3000/api/courses/${courseId}/chapters/${chapterId}`)
       .then((res) => res.json())
       .then((data) => setLesson(data));
@@ -44,4 +48,3 @@ export default function LessonsPage() {
     </div>
   );
 }
-

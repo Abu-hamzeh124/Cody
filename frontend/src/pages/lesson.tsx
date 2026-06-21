@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 
 type lesson = {
@@ -16,6 +16,7 @@ type lesson = {
 };
 
 export default function LessonPage() {
+  const navigate = useNavigate();
   const [lesson, setLesson] = useState<lesson>();
   const [userCode, setCode] = useState("# Write your code here");
   const [result, setResult] = useState<{
@@ -24,6 +25,10 @@ export default function LessonPage() {
   } | null>(null);
   const { courseId, chapterId, lessonId } = useParams();
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/");
+      return;
+    }
     fetch(
       `http://localhost:3000/api/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}`,
     )
@@ -39,6 +44,16 @@ export default function LessonPage() {
     });
     const data = await response.json();
     setResult(data);
+    if (data.passed) {
+      await fetch("http://localhost:3000/api/progress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ lessonId }),
+      });
+    }
   };
 
   return (
@@ -64,6 +79,7 @@ export default function LessonPage() {
           {result && (
             <p className={result.passed ? "text-green-500" : "text-red-500"}>
               {result.passed ? "✅ Tests passed!" : "❌ Tests failed"}
+              {result.output}
             </p>
           )}
         </div>
