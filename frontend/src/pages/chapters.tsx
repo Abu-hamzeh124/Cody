@@ -21,19 +21,19 @@ export default function ChaptersPage() {
       .then((data) => setChapter(data));
   }, []);
 
-  const handleCourse = (id: string) => {
-    navigate(`/courses/${id}`);
+  const handleChapter = (id: string) => {
+    navigate(`/courses/${courseId}/chapters/${id}`);
   };
 
   return (
     <div className="min-h-screen bg-gray-900 p-8">
-      <h1 className="text-white text-3xl font-bold mb-8">Courses</h1>
+      <h1 className="text-white text-3xl font-bold mb-8">Chapters</h1>
       {chapter.map((chapter) => (
         <div
           key={chapter.id}
           className="bg-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:bg-gray-700"
         >
-          <button onClick={() => handleCourse(chapter.id)}>
+          <button onClick={() => handleChapter(chapter.id)}>
             {chapter.name}
           </button>
         </div>

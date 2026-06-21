@@ -7,6 +7,7 @@ import DashboardPage from "./pages/dashboard";
 import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import ChaptersPage from "./pages/chapters";
+import LessonsPage from "./pages/lessons";
 
 const router = createBrowserRouter([
   { path: "/", element: <LoginPage /> },
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
   { path: "/dashboard", element: <DashboardPage /> },
   { path: "/courses", element: <CoursePage /> },
   { path: "/courses/:courseId", element: <ChaptersPage /> },
+  { path: "/courses/:courseId/chapters/:chapterId", element: <LessonsPage /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(
