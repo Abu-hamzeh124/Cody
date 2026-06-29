@@ -63,6 +63,17 @@ export const userProgress = sqliteTable("user_progress", {
   completedAt: integer("completed_at"),
 });
 
+export const refreshToken = sqliteTable("refreshToken", {
+  id: text("id").primaryKey().notNull().unique(),
+  token: text("token").notNull().unique(),
+  userId: text("user_id")
+    .references(() => users.id)
+    .notNull(),
+  createdAt: integer("created_at").notNull(),
+  expiresIn: integer("expires_in").notNull(),
+  revoked: integer("revoked"),
+});
+
 export type User = typeof users.$inferSelect;
 export type Course = typeof courses.$inferSelect;
 export type Chapter = typeof chapters.$inferSelect;

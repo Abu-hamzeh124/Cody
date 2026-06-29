@@ -4,24 +4,41 @@ import { handlerCreateUser, handlerLogin } from "./middleware/users.js";
 import { handlerGetChapter } from "./middleware/chapters.js";
 import { handlerGetCourses, handlerGetCourse } from "./middleware/courses.js";
 import { handlerGetLesson } from "./middleware/lessons.js";
-import { handlerGetProgress, handlerCreateProgress } from "./middleware/progress.js";
-import { UserAuthentecation } from "./middleware/auth.js";
+import {
+  handlerGetProgress,
+  handlerCreateProgress,
+} from "./middleware/progress.js";
+import { handlerRefresh, UserAuthentecation } from "./middleware/auth/auth.js";
 import { handlerExecCode } from "./middleware/SubmitCode.js";
-import cors from 'cors'
-
+import { submitRateLimit } from "./middleware/auth/rate_limiting/submitLimit.js";
+import { loginRateLimit } from "./middleware/auth/rate_limiting/loginLimit.js";
+import { registerRateLimit } from "./middleware/auth/rate_limiting/registerLimit.js";
+import cors from "cors";
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:5173' }))
+app.use(cors({ origin: "http://localhost:5173" }));
 
-app.post("/api/user", (req: Request, res: Response, next: NextFunction) => {
-  Promise.resolve(handlerCreateUser(req, res)).catch(next);
-});
+app.post(
+  "/api/user",
+  registerRateLimit,
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerCreateUser(req, res)).catch(next);
+  },
+);
 
-app.post("/api/login", (req: Request, res: Response, next: NextFunction) => {
-  Promise.resolve(handlerLogin(req, res)).catch(next);
+app.post(
+  "/api/login",
+  loginRateLimit,
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerLogin(req, res)).catch(next);
+  },
+);
+
+app.post("/api/refresh", (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(handlerRefresh(req, res)).catch(next);
 });
 
 app.get("/api/courses", (req: Request, res: Response, next: NextFunction) => {
@@ -67,6 +84,7 @@ app.post(
 
 app.post(
   "/api/submit",
+  submitRateLimit,
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handlerExecCode(req, res)).catch(next);
   },
