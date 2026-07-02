@@ -1,24 +1,15 @@
-# Dependencies
 node_modules/
-
-# Build outputs
+backend/node_modules/
+frontend/node_modules/
+backend/src/db/dqatabase/
+backend/seeds.ts
 dist/
 dist-ssr/
-
-# Environment variables
 .env
-
-# Database
 *.db
 *.db-shm
 *.db-wal
-
-# Logs
 *.log
-
-# OS files
 .DS_Store
-
-# Editor
 .vscode/*
 !.vscode/extensions.json

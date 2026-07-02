@@ -16,7 +16,6 @@ export async function handlerCreateUser(req: Request, res: Response) {
     const hashedPassword = await hashPassword(parsedReq.password);
     const [user] = await createUser(parsedReq.email, hashedPassword);
     res.status(201).send({
-      id: user.id,
       accessToken: genAccessToken(user.id),
     });
   } catch (error) {
@@ -42,7 +41,6 @@ export async function handlerLogin(req: Request, res: Response) {
     } else {
       if (await argon.verify(user.hashedPassword, parsedReq.password)) {
         res.status(200).send({
-          id: user.id,
           accessToken: genAccessToken(user.id),
         });
       } else {
@@ -54,6 +52,4 @@ export async function handlerLogin(req: Request, res: Response) {
   }
 }
 
-export async function handlerLogout(req: Request, res: Response) {
-  
-}
+export async function handlerLogout(req: Request, res: Response) {}

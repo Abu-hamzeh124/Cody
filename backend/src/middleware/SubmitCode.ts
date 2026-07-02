@@ -5,14 +5,13 @@ import { unlinkSync, writeFileSync } from "node:fs";
 export async function handlerExecCode(req: Request, res: Response) {
   type parameters = {
     lessonId: string;
-    userId: string;
     userCode: string;
   };
 
   try {
     const parsedReq: parameters = req.body;
-
-    if (!parsedReq.lessonId || !parsedReq.userId) {
+    const userId = (req as any).user.userId
+    if (!parsedReq.lessonId) {
       return res.status(400).send("Invalid lesson or user");
     }
     const testCode = (await getLesson(parsedReq.lessonId)).testCode;

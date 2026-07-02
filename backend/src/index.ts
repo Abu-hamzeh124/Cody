@@ -84,6 +84,7 @@ app.post(
 
 app.post(
   "/api/submit",
+  UserAuthentecation,
   submitRateLimit,
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handlerExecCode(req, res)).catch(next);
