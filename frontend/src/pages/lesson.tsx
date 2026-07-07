@@ -21,22 +21,29 @@ export default function LessonPage() {
   const navigate = useNavigate();
   const [lesson, setLesson] = useState<lesson>();
   const [userCode, setCode] = useState("# Write your code here");
+  const [allLessons, setAllLessons] = useState<lesson[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [result, setResult] = useState<{
     passed: boolean;
     output: string;
   } | null>(null);
-  const { courseId, chapterId, lessonId } = useParams();
+  const { courseId, lessonId } = useParams();
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/");
       return;
     }
-    fetch(
-      `http://localhost:3000/api/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}`,
-    )
+    fetch(`http://localhost:3000/api/courses/${courseId}/lessons`)
       .then((res) => res.json())
-      .then((data) => setLesson(data));
-  }, []);
+      .then((data) => {
+        setAllLessons(data);
+        const index = data.findIndex((les: lesson) => les.id === lessonId);
+        setCurrentIndex(index);
+        setLesson(data[index]);
+        setResult(null);
+        setCode("# Write your code here");
+      });
+  }, [lessonId]);
 
   const handleSubmit = async () => {
     const response = await fetch("http://localhost:3000/api/submit", {
@@ -60,44 +67,95 @@ export default function LessonPage() {
       });
     }
   };
+  const HandlePrev = () => {
+    if (currentIndex === 0) return;
+    navigate(
+      `/courses/${courseId}/chapters/${allLessons[currentIndex - 1].chapterId}/lessons/${allLessons[currentIndex - 1].id}`,
+    );
+  };
+
+  const HandleNext = () => {
+    if (currentIndex === allLessons.length - 1) return;
+    navigate(
+      `/courses/${courseId}/chapters/${allLessons[currentIndex + 1].chapterId}/lessons/${allLessons[currentIndex + 1].id}`,
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="h-screen overflow-hidden bg-gray-950 flex flex-col">
       <Navbar />
-      <div className="p-8">
-        <h1 className="text-white text-xl font-bold mb-8">{lesson?.name}</h1>
-        <div className="flex h-screen">
-          <div className="w-1/2 overflow-y-auto p-8 bg-gray-950">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left panel */}
+        <div className="w-1/2 h-full overflow-y-auto p-8 border-r border-gray-800">
+          <h1 className="text-white text-2xl font-bold mb-8">{lesson?.name}</h1>
+          <div className="text-white prose prose-invert">
             <ReactMarkdown>{lesson?.content}</ReactMarkdown>
-            <h2 className="text-white text-base leading-relaxed mb-4">
-              Assignment
-            </h2>
-            <p className="text-gray-300 text-sm mb-4">{lesson?.assignment}</p>
-            <h2 className="text-white text-base leading-relaxed mb-4">Hints</h2>
-            <p className="text-white text-sm italic mb-8">{lesson?.hints}</p>
           </div>
+          <div className="mt-8 rounded-lg border border-gray-800 bg-gray-900 p-5">
+            <h2 className="font-semibold text-white mb-2">Assignment</h2>
+            <p className="text-gray-300 text-sm">{lesson?.assignment}</p>
+          </div>
+          <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5">
+            <h2 className="font-semibold text-white mb-2">Hints</h2>
+            <p className="text-gray-300 text-sm">{lesson?.hints}</p>
+          </div>
+        </div>
 
-          <div className="w-1/2 flex flex-col bg-gray-950">
+        {/* Right panel */}
+        <div className="w-1/2 h-full overflow-y-auto flex flex-col">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-800 bg-gray-900">
+            <span className="text-gray-400 text-sm">Chapter 1 - Lesson 1</span>
+            <div className="flex gap-2">
+              <button
+                onClick={HandlePrev}
+                disabled={currentIndex === 0}
+                className="text-gray-400 hover:text-white px-3 py-1 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                ← Prev
+              </button>
+              <button
+                onClick={HandleNext}
+                disabled={currentIndex === allLessons.length - 1}
+                className="text-gray-400 hover:text-white px-3 py-1 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+          <div className="flex-1">
             <Editor
-              height="90vh"
+              height="100%"
               defaultLanguage="python"
               theme="vs-dark"
               value={userCode}
               onChange={(value) => setCode(value || "")}
             />
-            <div>
-              <button
-                onClick={handleSubmit}
-                className="bg-blue-600 hover:bg-indigo-400 text-white px-6 py-2 rounded-md font-semibold m-4"
-              >
-                Submit
-              </button>
-              {result && (
-                <p
-                  className={result.passed ? "text-green-500" : "text-red-500"}
-                >
-                  {result.passed ? "✅ Tests passed!" : "❌ Tests failed"}
-                  {result.output}
+          </div>
+          <div className="border-t border-gray-800 bg-gray-900 p-4">
+            <button
+              onClick={handleSubmit}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-md font-semibold"
+            >
+              Submit
+            </button>
+            <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5">
+              <h2 className="font-semibold text-white mb-2">Output</h2>
+              {result ? (
+                <>
+                  <p
+                    className={
+                      result.passed ? "text-green-400" : "text-red-400"
+                    }
+                  >
+                    {result.passed ? "✅ Tests passed!" : "❌ Tests failed"}
+                  </p>
+                  <pre className="mt-2 text-sm text-gray-300 whitespace-pre-wrap">
+                    {result.output}
+                  </pre>
+                </>
+              ) : (
+                <p className="text-gray-500 text-sm">
+                  Run your code to see the output
                 </p>
               )}
             </div>

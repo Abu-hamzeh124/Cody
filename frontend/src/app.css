@@ -1,0 +1,4 @@
+@theme {
+  --color-editor-bg: #06011c; /* Tailwind's slate-900 */
+  --color-editor-text: #ffffff; /* Tailwind's slate-50 */
+}

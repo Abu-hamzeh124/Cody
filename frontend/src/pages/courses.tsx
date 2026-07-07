@@ -34,9 +34,9 @@ export default function CoursePage() {
         {courses.map((course) => (
           <div
             key={course.id}
-            className="bg-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:bg-gray-700"
+            className="max-w-3xl mx-auto bg-gray-900 border border-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:border-blue-500 transition-colors duration-200"
           >
-            <button onClick={() => handleCourse(course.id)}>
+            <button className="text-white font-semibold" onClick={() => handleCourse(course.id)}>
               {course.name}
             </button>
             <p className="text-gray-400 mt-2">{course.description}</p>

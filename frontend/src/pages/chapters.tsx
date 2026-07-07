@@ -38,9 +38,12 @@ export default function ChaptersPage() {
         {chapter.map((chapter) => (
           <div
             key={chapter.id}
-            className="bg-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:bg-gray-700"
+            className="max-w-3xl mx-auto bg-gray-900 border border-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:border-blue-500 transition-colors duration-200"
           >
-            <button onClick={() => handleChapter(chapter.id)}>
+            <button
+              className="text-white font-semibold"
+              onClick={() => handleChapter(chapter.id)}
+            >
               {chapter.name}
             </button>
           </div>

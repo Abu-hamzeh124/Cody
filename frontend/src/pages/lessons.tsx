@@ -41,11 +41,11 @@ export default function LessonsPage() {
       <div className="p-8">
         <h1 className="text-white text-3xl font-bold mb-8">Lessons</h1>
         {lesson.map((lesson) => (
-          <div
-            key={lesson.id}
-            className="bg-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:bg-gray-700"
-          >
-            <button onClick={() => handleCourse(lesson.id)}>
+          <div className="max-w-3xl mx-auto bg-gray-900 border border-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:border-blue-500 transition-colors duration-200">
+            <button
+              className="text-white font-semibold"
+              onClick={() => handleCourse(lesson.id)}
+            >
               {lesson.name}
             </button>
           </div>
