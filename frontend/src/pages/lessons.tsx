@@ -20,20 +20,33 @@ type lesson = {
 export default function LessonsPage() {
   const navigate = useNavigate();
   const [lesson, setLesson] = useState<lesson[]>([]);
+  const [loading, setLoading] = useState<Boolean>();
   const { courseId, chapterId } = useParams();
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/");
       return;
     }
+    setLoading(true);
     fetch(`http://localhost:3000/api/courses/${courseId}/chapters/${chapterId}`)
       .then((res) => res.json())
-      .then((data) => setLesson(data));
+      .then((data) => {
+        setLesson(data);
+        setLoading(false);
+      });
   }, []);
 
   const handleCourse = (id: string) => {
     navigate(`/courses/${courseId}/chapters/${chapterId}/lessons/${id}`);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-950">

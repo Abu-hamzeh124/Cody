@@ -21,3 +21,4 @@ export async function createProgress(userId: string, lessonId: string) {
   }).returning();
   return resp;
 }
+

@@ -3,10 +3,11 @@ import type { Request, Response, Application, NextFunction } from "express";
 import { handlerCreateUser, handlerLogin } from "./middleware/users.js";
 import { handlerGetChapter } from "./middleware/chapters.js";
 import { handlerGetCourses, handlerGetCourse } from "./middleware/courses.js";
-import { handlerGetLesson } from "./middleware/lessons.js";
+import { handlerGetLesson, handlerGetLessons } from "./middleware/lessons.js";
 import {
   handlerGetProgress,
   handlerCreateProgress,
+  handlerGetCourseProgress,
 } from "./middleware/progress.js";
 import { handlerRefresh, UserAuthentecation } from "./middleware/auth/auth.js";
 import { handlerExecCode } from "./middleware/SubmitCode.js";
@@ -74,6 +75,20 @@ app.get(
   },
 );
 
+app.get(
+  "/api/progress/course/:courseId",
+  UserAuthentecation,
+  (req, res, next) => {
+    Promise.resolve(handlerGetCourseProgress(req, res)).catch(next);
+  },
+);
+
+app.get(
+  "/api/courses/:courseId/lessons",
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerGetLessons(req, res)).catch(next);
+  },
+);
 app.post(
   "/api/progress",
   UserAuthentecation,

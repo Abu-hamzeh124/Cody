@@ -19,6 +19,7 @@ type lesson = {
 
 export default function LessonPage() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState<Boolean>();
   const [lesson, setLesson] = useState<lesson>();
   const [userCode, setCode] = useState("# Write your code here");
   const [allLessons, setAllLessons] = useState<lesson[]>([]);
@@ -27,6 +28,7 @@ export default function LessonPage() {
     passed: boolean;
     output: string;
   } | null>(null);
+
   const { courseId, lessonId } = useParams();
   useEffect(() => {
     if (!localStorage.getItem("token")) {
@@ -46,6 +48,7 @@ export default function LessonPage() {
   }, [lessonId]);
 
   const handleSubmit = async () => {
+    setLoading(true);
     const response = await fetch("http://localhost:3000/api/submit", {
       method: "POST",
       headers: {
@@ -66,7 +69,9 @@ export default function LessonPage() {
         body: JSON.stringify({ lessonId }),
       });
     }
+    setLoading(false);
   };
+
   const HandlePrev = () => {
     if (currentIndex === 0) return;
     navigate(
@@ -134,9 +139,10 @@ export default function LessonPage() {
           <div className="border-t border-gray-800 bg-gray-900 p-4">
             <button
               onClick={handleSubmit}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-md font-semibold"
+              disabled={loading === true}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-md font-semibold disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              Submit
+              {loading ? "Running..." : "Submit"}
             </button>
             <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5">
               <h2 className="font-semibold text-white mb-2">Output</h2>

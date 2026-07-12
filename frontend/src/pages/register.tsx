@@ -6,9 +6,11 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState<Boolean>();
   const navigate = useNavigate();
 
   const handleRegister = async () => {
+    setLoading(true);
     const response = await fetch("http://localhost:3000/api/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -17,12 +19,22 @@ export default function RegisterPage() {
     const text = await response.text();
     if (!response.ok) {
       setError(text);
+      setLoading(false); 
       return;
     }
     const data = JSON.parse(text);
     localStorage.setItem("token", data.accessToken);
+    setLoading(false);
     navigate("/");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div

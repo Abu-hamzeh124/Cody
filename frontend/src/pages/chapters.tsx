@@ -14,22 +14,33 @@ type chapter = {
 
 export default function ChaptersPage() {
   const [chapter, setChapter] = useState<chapter[]>([]);
+  const [loading, setLoading] = useState<Boolean>();
   const navigate = useNavigate();
   const { courseId } = useParams();
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/");
       return;
     }
+    setLoading(true);
     fetch(`http://localhost:3000/api/courses/${courseId}`)
       .then((res) => res.json())
-      .then((data) => setChapter(data));
+      .then((data) => {
+        setChapter(data);
+        setLoading(false);
+      });
   }, []);
 
   const handleChapter = (id: string) => {
     navigate(`/courses/${courseId}/chapters/${id}`);
   };
 
+  if (loading) {
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+    </div>;
+  }
   return (
     <div className="min-h-screen bg-gray-950">
       <Navbar />

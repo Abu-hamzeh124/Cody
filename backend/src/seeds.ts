@@ -6,10 +6,8 @@ import { v4 } from "uuid";
 // 22555633-54a1-42ff-8b94-e124ba0cdcb7
 
 async function course() {
-  await db.insert(courses).values({
-    id: v4(),
-    name: "Learn Memory management in C",
-    description: "THis course blah blah blah",
+  await db.update(courses).set({
+    language: "c",
   });
 }
 
@@ -39,11 +37,16 @@ async function chapter3() {
   });
 }
 async function lesson1() {
-  await db.update(lessons).set({testCode: `import subprocess
+  await db
+    .update(lessons)
+    .set({
+      testCode: `import subprocess
 
 def test_hello_world():
     result = subprocess.run(['python', '/app/main.py'], capture_output=True, text=True)
-    assert result.stdout.strip() == "hello world"`}).where(eq(lessons.id, "d84bf156-36df-4e27-b254-626e9dd9db32"));
+    assert result.stdout.strip() == "hello world"`,
+    })
+    .where(eq(lessons.id, "d84bf156-36df-4e27-b254-626e9dd9db32"));
 }
 
-lesson1();
+course();

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-
+import logo_small from "../assets/logo_small.png";
 export default function Navbar() {
   const navigate = useNavigate()
 
@@ -10,11 +10,9 @@ export default function Navbar() {
 
   return (
     <nav className="bg-gray-900 border-b border-gray-800 px-8 py-4 flex justify-between items-center">
-      <h1 className="text-white text-xl font-bold cursor-pointer" onClick={() => navigate('/courses')}>
-        Cody
-      </h1>
+      <img src={logo_small} className="h-12 cursor-pointer" onClick={() => navigate('/courses')} />
       <button onClick={handleLogout} className="text-gray-400 hover:text-white">
-        Logout
+        تسجيل خروج
       </button>
     </nav>
   )

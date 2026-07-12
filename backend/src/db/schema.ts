@@ -1,9 +1,10 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, unique } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey().notNull().unique(),
   email: text("email").notNull().unique(),
   hashedPassword: text("hashed_password").notNull(),
+  isAdmin: integer("is_admin"),
   createdAt: integer("created_at")
     .notNull()
     .$defaultFn(() => Date.now()),
@@ -14,6 +15,7 @@ export const courses = sqliteTable("courses", {
   id: text("id").primaryKey().notNull().unique(),
   name: text("name").notNull().unique(),
   description: text("description").notNull(),
+  language: text("language").notNull().default("Python"),
   createdAt: integer("created_at")
     .notNull()
     .$defaultFn(() => Date.now()),
@@ -51,17 +53,23 @@ export const lessons = sqliteTable("lessons", {
     .notNull(),
 });
 
-export const userProgress = sqliteTable("user_progress", {
-  id: text("id").primaryKey().notNull().unique(),
-  userId: text("user_id")
-    .references(() => users.id)
-    .notNull(),
-  lessonId: text("lesson_id")
-    .references(() => lessons.id)
-    .notNull(),
-  completed: integer("completed").notNull(),
-  completedAt: integer("completed_at"),
-});
+export const userProgress = sqliteTable(
+  "user_progress",
+  {
+    id: text("id").primaryKey().notNull().unique(),
+    userId: text("user_id")
+      .references(() => users.id)
+      .notNull(),
+    lessonId: text("lesson_id")
+      .references(() => lessons.id)
+      .notNull(),
+    completed: integer("completed").notNull(),
+    completedAt: integer("completed_at"),
+  },
+  (table) => ({
+    userLessonUnique: unique().on(table.userId, table.lessonId),
+  }),
+);
 
 export const refreshToken = sqliteTable("refreshToken", {
   id: text("id").primaryKey().notNull().unique(),

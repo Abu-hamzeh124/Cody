@@ -8,6 +8,7 @@ import RegisterPage from "./pages/register";
 import ChaptersPage from "./pages/chapters";
 import LessonsPage from "./pages/lessons";
 import LessonPage from "./pages/lesson";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const router = createBrowserRouter([
   { path: "/", element: <LoginPage /> },
@@ -15,11 +16,16 @@ const router = createBrowserRouter([
   { path: "/courses", element: <CoursePage /> },
   { path: "/courses/:courseId", element: <ChaptersPage /> },
   { path: "/courses/:courseId/chapters/:chapterId", element: <LessonsPage /> },
-  { path: "/courses/:courseId/chapters/:chapterId/lessons/:lessonId", element: <LessonPage /> }
+  {
+    path: "/courses/:courseId/chapters/:chapterId/lessons/:lessonId",
+    element: <LessonPage />,
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
   </StrictMode>,
 );
