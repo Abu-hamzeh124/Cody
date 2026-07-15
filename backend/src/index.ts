@@ -2,14 +2,22 @@ import express from "express";
 import type { Request, Response, Application, NextFunction } from "express";
 import { handlerCreateUser, handlerLogin } from "./middleware/users.js";
 import { handlerGetChapter } from "./middleware/chapters.js";
-import { handlerGetCourses, handlerGetCourse } from "./middleware/courses.js";
+import {
+  handlerGetCourses,
+  handlerGetCourse,
+  handlerCreateCourse,
+} from "./middleware/courses.js";
 import { handlerGetLesson, handlerGetLessons } from "./middleware/lessons.js";
 import {
   handlerGetProgress,
   handlerCreateProgress,
   handlerGetCourseProgress,
 } from "./middleware/progress.js";
-import { handlerRefresh, UserAuthentecation } from "./middleware/auth/auth.js";
+import {
+  handlerRefresh,
+  isAdmin,
+  UserAuthentication,
+} from "./middleware/auth/auth.js";
 import { handlerExecCode } from "./middleware/SubmitCode.js";
 import { submitRateLimit } from "./middleware/auth/rate_limiting/submitLimit.js";
 import { loginRateLimit } from "./middleware/auth/rate_limiting/loginLimit.js";
@@ -69,7 +77,7 @@ app.get(
 
 app.get(
   "/api/progress",
-  UserAuthentecation,
+  UserAuthentication,
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handlerGetProgress(req, res)).catch(next);
   },
@@ -77,7 +85,7 @@ app.get(
 
 app.get(
   "/api/progress/course/:courseId",
-  UserAuthentecation,
+  UserAuthentication,
   (req, res, next) => {
     Promise.resolve(handlerGetCourseProgress(req, res)).catch(next);
   },
@@ -91,7 +99,7 @@ app.get(
 );
 app.post(
   "/api/progress",
-  UserAuthentecation,
+  UserAuthentication,
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handlerCreateProgress(req, res)).catch(next);
   },
@@ -99,10 +107,19 @@ app.post(
 
 app.post(
   "/api/submit",
-  UserAuthentecation,
+  UserAuthentication,
   submitRateLimit,
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handlerExecCode(req, res)).catch(next);
+  },
+);
+
+app.post(
+  "/api/courses",
+  UserAuthentication,
+  isAdmin,
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerCreateCourse(req, res)).catch(next);
   },
 );
 

@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX `user_progress_user_id_lesson_id_unique` ON `user_progress` (`user_id`,`lesson_id`);

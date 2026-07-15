@@ -13,6 +13,7 @@ CREATE TABLE `courses` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`description` text NOT NULL,
+	`language` text DEFAULT 'Python' NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer
 );
@@ -35,6 +36,18 @@ CREATE TABLE `lessons` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `lessons_id_unique` ON `lessons` (`id`);--> statement-breakpoint
+CREATE TABLE `refreshToken` (
+	`id` text PRIMARY KEY NOT NULL,
+	`token` text NOT NULL,
+	`user_id` text NOT NULL,
+	`created_at` integer NOT NULL,
+	`expires_in` integer NOT NULL,
+	`revoked` integer,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `refreshToken_id_unique` ON `refreshToken` (`id`);--> statement-breakpoint
+CREATE UNIQUE INDEX `refreshToken_token_unique` ON `refreshToken` (`token`);--> statement-breakpoint
 CREATE TABLE `user_progress` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
@@ -46,10 +59,12 @@ CREATE TABLE `user_progress` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `user_progress_id_unique` ON `user_progress` (`id`);--> statement-breakpoint
+CREATE UNIQUE INDEX `user_progress_user_id_lesson_id_unique` ON `user_progress` (`user_id`,`lesson_id`);--> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
 	`email` text NOT NULL,
 	`hashed_password` text NOT NULL,
+	`is_admin` integer,
 	`created_at` integer NOT NULL,
 	`updated_at` integer
 );

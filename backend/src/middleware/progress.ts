@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { createProgress, getProgress } from "../db/queries/progress.js";
 import { getCourse } from "../db/queries/courses.js";
 import { getChapter } from "../db/queries/chapters.js";
+import z, { ZodError } from "zod";
 
 export async function handlerGetProgress(req: Request, res: Response) {
   try {
@@ -19,22 +20,25 @@ export async function handlerGetProgress(req: Request, res: Response) {
 }
 
 export async function handlerCreateProgress(req: Request, res: Response) {
-  type parameters = {
-    lessonId: string;
-  };
+  const Parameters = z.object({
+    lessonId: z.string(),
+  });
 
   try {
     const auth = (req as any).user;
-    const parsedReq: parameters = req.body;
-    if (!auth.userID || !parsedReq.lessonId) {
+    const parsedReq = Parameters.parse(req.body);
+    if (!auth.userID) {
       res.status(403).send();
     } else {
       const progress = await createProgress(auth.userID, parsedReq.lessonId);
       res.status(200).send(progress);
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).send();
+    if (error instanceof ZodError) {
+      res.status(400).send();
+    } else {
+      res.status(500).send();
+    }
   }
 }
 

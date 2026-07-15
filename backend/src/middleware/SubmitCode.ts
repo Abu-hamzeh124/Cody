@@ -2,15 +2,15 @@ import { exec } from "node:child_process";
 import { Request, Response } from "express";
 import { getLesson } from "../db/queries/lessons.js";
 import { unlinkSync, writeFileSync } from "node:fs";
+import z, { ZodError } from "zod";
 export async function handlerExecCode(req: Request, res: Response) {
-  type parameters = {
-    lessonId: string;
-    userCode: string;
-  };
+  const Parameters = z.object({
+    lessonId: z.string(),
+    userCode: z.string(),
+  });
 
   try {
-    const parsedReq: parameters = req.body;
-    const userId = (req as any).user.userId
+    const parsedReq = Parameters.parse(req.body);
     if (!parsedReq.lessonId) {
       return res.status(400).send("Invalid lesson or user");
     }
@@ -23,7 +23,7 @@ export async function handlerExecCode(req: Request, res: Response) {
     exec(
       `docker run --rm -v ${mainFile}:/app/main.py -v ${testFile}:/app/test.py python:3.11-slim sh -c "pip install pytest -q && timeout 30 python -m pytest /app/test.py"`,
       (error, stdout, stderr) => {
-         try {
+        try {
           unlinkSync(mainFile);
           unlinkSync(testFile);
         } catch (cleanupError) {
@@ -38,6 +38,10 @@ export async function handlerExecCode(req: Request, res: Response) {
       },
     );
   } catch (error) {
-    throw error;
+    if (error instanceof ZodError) {
+      res.status(400).send();
+    } else {
+      throw error;
+    }
   }
 }
