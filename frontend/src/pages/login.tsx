@@ -23,6 +23,8 @@ export default function LoginPage() {
       setLoading(false);
       return;
     }
+    console.log("login response status:", response.status);
+    console.log("login response:", text);
     const data = JSON.parse(text);
     localStorage.setItem("token", data.accessToken);
     setLoading(false);

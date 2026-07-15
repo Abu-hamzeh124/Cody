@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
-
 type Course = {
   id: string;
   name: string;
@@ -17,6 +16,7 @@ export default function CoursePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("courses useEffect running");
     if (!localStorage.getItem("token")) {
       navigate("/");
       return;
@@ -26,30 +26,36 @@ export default function CoursePage() {
       .then((res) => res.json())
       .then((data) => {
         setCourses(data);
-        for (let course of data) {
-          fetch(`http://localhost:3000/api/progress/course/${course.id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((progress) => {
-              setCourses((prev) =>
-                prev.map((c) =>
-                  c.id === course.id
-                    ? {
-                        ...c,
-                        progress: Math.min(
-                          (progress.progressCount / progress.lessonCount) * 100,
-                          100,
-                        ),
-                      }
-                    : c,
-                ),
-              );
-            });
-        }
-        setLoading(false);
+        Promise.all(
+          data.map((course: Course) =>
+            fetch(`http://localhost:3000/api/progress/course/${course.id}`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            })
+              .then((res) => res.json())
+              .then((progress) => {
+                console.log("progress response:", progress);
+                setCourses((prev) =>
+                  prev.map((c) =>
+                    c.id === course.id
+                      ? {
+                          ...c,
+                          progress: Math.min(
+                            (progress.progressCount / progress.lessonCount) *
+                              100,
+                            100,
+                          ),
+                        }
+                      : c,
+                  ),
+                );
+              }),
+          ),
+        ).then(() => {
+          console.log("i am ibrahim");
+          setLoading(false);
+        });
       });
   }, []);
 
