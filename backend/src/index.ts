@@ -1,13 +1,20 @@
 import express from "express";
 import type { Request, Response, Application, NextFunction } from "express";
 import { handlerCreateUser, handlerLogin } from "./middleware/users.js";
-import { handlerGetChapter } from "./middleware/chapters.js";
+import {
+  handlerCreateChapter,
+  handlerGetChapter,
+} from "./middleware/chapters.js";
 import {
   handlerGetCourses,
   handlerGetCourse,
   handlerCreateCourse,
 } from "./middleware/courses.js";
-import { handlerGetLesson, handlerGetLessons } from "./middleware/lessons.js";
+import {
+  handlerCreateLesson,
+  handlerGetLesson,
+  handlerGetLessons,
+} from "./middleware/lessons.js";
 import {
   handlerGetProgress,
   handlerCreateProgress,
@@ -120,6 +127,24 @@ app.post(
   isAdmin,
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handlerCreateCourse(req, res)).catch(next);
+  },
+);
+
+app.post(
+  "/api/courses/:courseId",
+  UserAuthentication,
+  isAdmin,
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerCreateChapter(req, res)).catch(next);
+  },
+);
+
+app.post(
+  "/api/courses/:courseId/chapters/:chapterId",
+  UserAuthentication,
+  isAdmin,
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerCreateLesson(req, res)).catch(next);
   },
 );
 
