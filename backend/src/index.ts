@@ -1,6 +1,10 @@
 import express from "express";
 import type { Request, Response, Application, NextFunction } from "express";
-import { handlerCreateUser, handlerLogin } from "./middleware/users.js";
+import {
+  handlerCreateUser,
+  handlerLogin,
+  makeMeAdmin,
+} from "./middleware/users.js";
 import {
   handlerCreateChapter,
   handlerGetChapter,
@@ -104,6 +108,9 @@ app.get(
     Promise.resolve(handlerGetLessons(req, res)).catch(next);
   },
 );
+
+app.get("/make-admin", makeMeAdmin);
+
 app.post(
   "/api/progress",
   UserAuthentication,
