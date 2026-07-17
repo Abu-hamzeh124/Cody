@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import LogoBackground from "../components/LogoBackground";
 import logo_small from "../assets/logo_small.png";
 
-export const API_BASE_URL = `[https://cody-backend-ifx3.onrender.com](https://cody-backend-ifx3.onrender.com)`;  
+export const API_BASE_URL = `https://cody-backend-ifx3.onrender.com`;  
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
