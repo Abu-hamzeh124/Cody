@@ -12,6 +12,8 @@ type chapter = {
   courseId: string;
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";  
+
 export default function ChaptersPage() {
   const [chapter, setChapter] = useState<chapter[]>([]);
   const [loading, setLoading] = useState<Boolean>();
@@ -24,7 +26,7 @@ export default function ChaptersPage() {
       return;
     }
     setLoading(true);
-    fetch(`http://localhost:3000/api/courses/${courseId}`)
+    fetch(`${API_BASE_URL}/api/courses/${courseId}`)
       .then((res) => res.json())
       .then((data) => {
         setChapter(data);
@@ -52,8 +54,8 @@ export default function ChaptersPage() {
             className="max-w-3xl mx-auto bg-gray-900 border border-gray-800 rounded-lg p-6 mb-4 cursor-pointer hover:border-blue-500 transition-colors duration-200"
           >
             <button
-              className="text-white font-semibold"
               onClick={() => handleChapter(chapter.id)}
+              className="text-white font-semibold"
             >
               {chapter.name}
             </button>

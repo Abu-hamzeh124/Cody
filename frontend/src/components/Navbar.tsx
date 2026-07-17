@@ -17,7 +17,7 @@ export default function Navbar() {
     setAdmin(payload.isAdmin);
   }, []);
   const handleAdmin = () => {
-    navigate("/");
+    navigate("/admin/courses");
   };
 
   return (

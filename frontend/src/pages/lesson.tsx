@@ -17,6 +17,8 @@ type lesson = {
   chapterId: string;
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";  
+
 export default function LessonPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<Boolean>();
@@ -35,7 +37,7 @@ export default function LessonPage() {
       navigate("/");
       return;
     }
-    fetch(`http://localhost:3000/api/courses/${courseId}/lessons`)
+    fetch(`${API_BASE_URL}/api/courses/${courseId}/lessons`)
       .then((res) => res.json())
       .then((data) => {
         setAllLessons(data);
