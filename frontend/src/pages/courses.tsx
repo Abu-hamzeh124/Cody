@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { API_BASE_URL } from "./login";
 
 type Course = {
   id: string;
@@ -9,8 +10,6 @@ type Course = {
   language: string;
   progress: number;
 };
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";  
 
 export default function CoursePage() {
   const [courses, setCourses] = useState<Course[]>([]);

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { API_BASE_URL } from "./login";
 
 type Chapter = {
   id: string;
@@ -8,8 +9,6 @@ type Chapter = {
   order: number;
   courseId: string;
 };
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";  
 
 export default function AdminChaptersPage() {
   const { courseId } = useParams<{ courseId: string }>();

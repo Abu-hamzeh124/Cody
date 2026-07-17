@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { API_BASE_URL } from "./login";
 
 type Lesson = {
   id: string;
@@ -14,10 +15,11 @@ type Lesson = {
   chapterId: string;
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";  
-
 export default function AdminLessonsPage() {
-  const { courseId, chapterId } = useParams<{ courseId: string; chapterId: string }>();
+  const { courseId, chapterId } = useParams<{
+    courseId: string;
+    chapterId: string;
+  }>();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -57,29 +59,32 @@ export default function AdminLessonsPage() {
 
     try {
       // POST /api/admin/chapters/:chapterId/lessons handles creation
-      const res = await fetch(`${API_BASE_URL}/api/admin/chapters/${chapterId}/lessons`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        `${API_BASE_URL}/api/admin/chapters/${chapterId}/lessons`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            name: newName,
+            description: newDescription,
+            content: newContent,
+            assignment: newAssignment,
+            hints: newHints,
+            testCode: newTestCode,
+            order: Number(newOrder),
+          }),
         },
-        body: JSON.stringify({
-          name: newName,
-          description: newDescription,
-          content: newContent,
-          assignment: newAssignment,
-          hints: newHints,
-          testCode: newTestCode,
-          order: Number(newOrder),
-        }),
-      });
+      );
 
       if (res.ok) {
         const newLesson = await res.json();
 
         // Update list state locally and maintain numerical sorting order
-        setLessons((prev) => 
-          ([...prev, newLesson]).sort((a, b) => a.order - b.order)
+        setLessons((prev) =>
+          [...prev, newLesson].sort((a, b) => a.order - b.order),
         );
 
         // Reset all creation input tracking states
@@ -100,9 +105,8 @@ export default function AdminLessonsPage() {
   };
 
   const openForm = () => {
-    const nextOrder = lessons.length > 0 
-      ? Math.max(...lessons.map(l => l.order)) + 1 
-      : 1;
+    const nextOrder =
+      lessons.length > 0 ? Math.max(...lessons.map((l) => l.order)) + 1 : 1;
     setNewOrder(nextOrder);
     setIsAdding(true);
   };
@@ -121,8 +125,8 @@ export default function AdminLessonsPage() {
       <div className="p-8">
         {/* Navigation Breadcrumbs */}
         <div className="max-w-4xl mx-auto flex items-center space-x-4 mb-8">
-          <button 
-            onClick={() => navigate(`/courses/${courseId}`)} 
+          <button
+            onClick={() => navigate(`/courses/${courseId}`)}
             className="text-gray-400 hover:text-white transition-colors text-sm"
           >
             &larr; Back to Chapters
@@ -134,7 +138,9 @@ export default function AdminLessonsPage() {
         <div className="max-w-4xl mx-auto bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
           {!isAdding ? (
             <div className="flex justify-between items-center">
-              <span className="text-gray-400 text-sm">Add interactive code execution lessons to this module</span>
+              <span className="text-gray-400 text-sm">
+                Add interactive code execution lessons to this module
+              </span>
               <button
                 className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-md transition-colors duration-200"
                 onClick={openForm}
@@ -146,7 +152,9 @@ export default function AdminLessonsPage() {
             <form onSubmit={handleAddLessonSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Lesson Title</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    Lesson Title
+                  </label>
                   <input
                     type="text"
                     className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none"
@@ -156,7 +164,9 @@ export default function AdminLessonsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Sorting Order Index</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    Sorting Order Index
+                  </label>
                   <input
                     type="number"
                     className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none"
@@ -169,7 +179,9 @@ export default function AdminLessonsPage() {
               </div>
 
               <div>
-                <label className="block text-gray-400 text-sm mb-1">Short Card Description</label>
+                <label className="block text-gray-400 text-sm mb-1">
+                  Short Card Description
+                </label>
                 <input
                   type="text"
                   className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none"
@@ -180,7 +192,9 @@ export default function AdminLessonsPage() {
               </div>
 
               <div>
-                <label className="block text-gray-400 text-sm mb-1">Lesson Markdown Content (Supports Arabic Text)</label>
+                <label className="block text-gray-400 text-sm mb-1">
+                  Lesson Markdown Content (Supports Arabic Text)
+                </label>
                 <textarea
                   className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none h-32 font-mono text-sm resize-none"
                   value={newContent}
@@ -191,7 +205,9 @@ export default function AdminLessonsPage() {
               </div>
 
               <div>
-                <label className="block text-gray-400 text-sm mb-1">Assignment Instruction Markdown Card</label>
+                <label className="block text-gray-400 text-sm mb-1">
+                  Assignment Instruction Markdown Card
+                </label>
                 <textarea
                   className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none h-24 font-mono text-sm resize-none"
                   value={newAssignment}
@@ -202,7 +218,9 @@ export default function AdminLessonsPage() {
               </div>
 
               <div>
-                <label className="block text-gray-400 text-sm mb-1">Hints (Rendered inside the Hints panel)</label>
+                <label className="block text-gray-400 text-sm mb-1">
+                  Hints (Rendered inside the Hints panel)
+                </label>
                 <textarea
                   className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none h-20 font-mono text-sm resize-none"
                   value={newHints}
@@ -212,7 +230,9 @@ export default function AdminLessonsPage() {
               </div>
 
               <div>
-                <label className="block text-gray-400 text-sm mb-1">Pytest Evaluation Sandbox Code (`testCode` Field)</label>
+                <label className="block text-gray-400 text-sm mb-1">
+                  Pytest Evaluation Sandbox Code (`testCode` Field)
+                </label>
                 <textarea
                   className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none h-32 font-mono text-sm resize-none"
                   value={newTestCode}
@@ -244,7 +264,9 @@ export default function AdminLessonsPage() {
         {/* Existing Lessons List Grid */}
         {lessons.length === 0 ? (
           <div className="max-w-4xl mx-auto text-center py-12 border border-dashed border-gray-800 rounded-lg">
-            <p className="text-gray-500">No lessons built inside this module yet.</p>
+            <p className="text-gray-500">
+              No lessons built inside this module yet.
+            </p>
           </div>
         ) : (
           <div className="max-w-4xl mx-auto space-y-3">
@@ -259,10 +281,12 @@ export default function AdminLessonsPage() {
                   </div>
                   <div>
                     <h3 className="text-white font-medium">{lesson.name}</h3>
-                    <p className="text-gray-500 text-xs mt-0.5 max-w-xl truncate">{lesson.description}</p>
+                    <p className="text-gray-500 text-xs mt-0.5 max-w-xl truncate">
+                      {lesson.description}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2 text-xs">
                   {lesson.testCode && (
                     <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">

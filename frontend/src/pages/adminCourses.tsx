@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { API_BASE_URL } from "./login";
 
 type Course = {
   id: string;
@@ -9,8 +10,6 @@ type Course = {
   language: string;
   progress: number;
 };
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";  
 
 export default function AdminCoursePage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -50,15 +49,16 @@ export default function AdminCoursePage() {
                       ? {
                           ...c,
                           progress: Math.min(
-                            (progress.progressCount / progress.lessonCount) * 100,
-                            100
+                            (progress.progressCount / progress.lessonCount) *
+                              100,
+                            100,
                           ),
                         }
-                      : c
-                  )
+                      : c,
+                  ),
                 );
-              })
-          )
+              }),
+          ),
         ).then(() => {
           setLoading(false);
         });
@@ -88,10 +88,10 @@ export default function AdminCoursePage() {
 
       if (res.ok) {
         const newCourse = await res.json();
-        
+
         // Append new course with 0% progress into state immediately
         setCourses((prev) => [...prev, { ...newCourse, progress: 0 }]);
-        
+
         // Reset states to default and hide the creation form
         setNewName("");
         setNewDescription("");
@@ -119,12 +119,14 @@ export default function AdminCoursePage() {
       <Navbar />
       <div className="p-8">
         <h1 className="text-white text-3xl font-bold mb-8">Courses</h1>
-        
+
         {/* Course Creation UI Card */}
         <div className="max-w-3xl mx-auto bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
           {!isAdding ? (
             <div className="flex justify-between items-center">
-              <span className="text-gray-400 text-sm">Create a new learning track</span>
+              <span className="text-gray-400 text-sm">
+                Create a new learning track
+              </span>
               <button
                 className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-md transition-colors duration-200"
                 onClick={() => setIsAdding(true)}
@@ -135,7 +137,9 @@ export default function AdminCoursePage() {
           ) : (
             <form onSubmit={handleAddCourseSubmit} className="space-y-4">
               <div>
-                <label className="block text-gray-400 text-sm mb-1">Course Name</label>
+                <label className="block text-gray-400 text-sm mb-1">
+                  Course Name
+                </label>
                 <input
                   type="text"
                   className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none transition-colors"
@@ -144,9 +148,11 @@ export default function AdminCoursePage() {
                   required
                 />
               </div>
-              
+
               <div>
-                <label className="block text-gray-400 text-sm mb-1">Description</label>
+                <label className="block text-gray-400 text-sm mb-1">
+                  Description
+                </label>
                 <textarea
                   className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none h-24 resize-none transition-colors"
                   value={newDescription}
@@ -156,7 +162,9 @@ export default function AdminCoursePage() {
               </div>
 
               <div>
-                <label className="block text-gray-400 text-sm mb-1">Language</label>
+                <label className="block text-gray-400 text-sm mb-1">
+                  Language
+                </label>
                 <select
                   className="w-full bg-gray-950 border border-gray-800 rounded p-2 text-white focus:border-blue-500 outline-none transition-colors"
                   value={newLanguage}

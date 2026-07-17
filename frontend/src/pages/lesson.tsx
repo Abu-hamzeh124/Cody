@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import Navbar from "../components/Navbar";
+import { API_BASE_URL } from "./login";
 
 type lesson = {
   id: string;
@@ -16,8 +17,6 @@ type lesson = {
   updatedAt: number | null;
   chapterId: string;
 };
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";  
 
 export default function LessonPage() {
   const navigate = useNavigate();
