@@ -35,7 +35,7 @@ const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: "https://cody-learn.vercel.app/" }));
 
 app.post(
   "/api/user",
