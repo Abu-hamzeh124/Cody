@@ -1,10 +1,6 @@
 import express from "express";
 import type { Request, Response, Application, NextFunction } from "express";
-import {
-  handlerCreateUser,
-  handlerLogin,
-  makeMeAdmin,
-} from "./middleware/users.js";
+import { handlerCreateUser, handlerLogin } from "./middleware/users.js";
 import {
   handlerCreateChapter,
   handlerGetChapter,
@@ -34,6 +30,7 @@ import { submitRateLimit } from "./middleware/auth/rate_limiting/submitLimit.js"
 import { loginRateLimit } from "./middleware/auth/rate_limiting/loginLimit.js";
 import { registerRateLimit } from "./middleware/auth/rate_limiting/registerLimit.js";
 import cors from "cors";
+import { handlerChatBot } from "./middleware/chatBot.js";
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
@@ -109,8 +106,6 @@ app.get(
   },
 );
 
-app.get("/make-admin", makeMeAdmin);
-
 app.post(
   "/api/progress",
   UserAuthentication,
@@ -152,6 +147,14 @@ app.post(
   isAdmin,
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handlerCreateLesson(req, res)).catch(next);
+  },
+);
+
+app.post(
+  "/api/codyAi",
+  UserAuthentication,
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerChatBot(req, res)).catch(next);
   },
 );
 

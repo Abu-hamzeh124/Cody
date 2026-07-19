@@ -60,20 +60,3 @@ export async function handlerLogin(req: Request, res: Response) {
   }
 }
 
-// في ملف الـ Controllers (مثلاً auth.ts)
-export async function makeMeAdmin(req: Request, res: Response) {
-  // تذكر حذف هذا الكود أو حمايته لاحقاً بعد أن تنتهي!
-  const email = "ingtgammer2@gmail.com"; // إيميلك
-
-  try {
-    // استخدم Drizzle لتحديث القيمة
-    await db
-      .update(users)
-      .set({ isAdmin: 1 }) // أو true حسب نوع العمود
-      .where(eq(users.email, email));
-
-    res.status(200).send("Done! You are now an admin.");
-  } catch (error) {
-    res.status(500).send(error);
-  }
-}
