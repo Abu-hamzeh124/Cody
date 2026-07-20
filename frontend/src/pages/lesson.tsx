@@ -50,7 +50,7 @@ export default function LessonPage() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const response = await fetch("http://localhost:3000/api/submit", {
+    const response = await fetch(`${API_BASE_URL}/api/submit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export default function LessonPage() {
     const data = await response.json();
     setResult(data);
     if (data.passed) {
-      await fetch("http://localhost:3000/api/progress", {
+      await fetch(`${API_BASE_URL}/api/progress`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -41,7 +41,6 @@ export default function AdminLessonsPage() {
     }
 
     setLoading(true);
-    // GET /api/courses/:courseId/chapters/:chapterId loads lessons for this module
     fetch(`${API_BASE_URL}/api/courses/${courseId}/chapters/${chapterId}`)
       .then((res) => res.json())
       .then((data) => {
@@ -58,7 +57,6 @@ export default function AdminLessonsPage() {
     e.preventDefault();
 
     try {
-      // POST /api/admin/chapters/:chapterId/lessons handles creation
       const res = await fetch(
         `${API_BASE_URL}/api/admin/chapters/${chapterId}/lessons`,
         {

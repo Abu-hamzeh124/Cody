@@ -29,7 +29,7 @@ export default function CoursePage() {
         setCourses(data);
         Promise.all(
           data.map((course: Course) =>
-            fetch(`http://localhost:3000/api/progress/course/${course.id}`, {
+            fetch(`${API_BASE_URL}/api/progress/course/${course.id}`, {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
