@@ -35,13 +35,13 @@ Answer in Arabic. Give hints, not full solutions.`,
     });
     if (
       !response.candidates ||
-      !response.candidates[1].content ||
-      !response.candidates[1].content.parts ||
-      !response.candidates[1].content.parts[1].text
+      !response.candidates[0].content ||
+      !response.candidates[0].content.parts ||
+      !response.candidates[0].content.parts[0].text
     ) {
       res.status(409).send("AI Api error");
     } else {
-      res.status(200).send(response.candidates[1].content?.parts[1].text);
+      res.status(200).send(response.candidates[0].content?.parts[0].text);
     }
   } catch (error) {
     if (error instanceof ZodError) {
