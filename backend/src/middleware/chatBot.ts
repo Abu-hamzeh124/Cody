@@ -43,8 +43,10 @@ Answer in Arabic. Give hints, not full solutions.`,
     } else {
       res.status(200).send(response.candidates[0].content?.parts[0].text);
     }
-  } catch (error) {
-    if (error instanceof ZodError) {
+  } catch (error: any) {
+    if (error?.status === 429 || error?.code === 429) {
+      res.status(429).send("المساعد غير متاح حالياً، حاول لاحقاً");
+    } else if (error instanceof ZodError) {
       res.status(409).send(error.message);
     } else {
       throw error;
