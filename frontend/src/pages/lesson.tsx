@@ -20,16 +20,17 @@ type lesson = {
 
 export default function LessonPage() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState<Boolean>();
+  const [loading, setLoading] = useState<boolean>();
   const [lesson, setLesson] = useState<lesson>();
   const [userCode, setCode] = useState("# Write your code here");
   const [allLessons, setAllLessons] = useState<lesson[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [prompt, setPrompt] = useState<string>();
+  const [aiResponse, setAiResponse] = useState<string>();
   const [result, setResult] = useState<{
     passed: boolean;
     output: string;
   } | null>(null);
-
   const { courseId, lessonId } = useParams();
   useEffect(() => {
     if (!localStorage.getItem("token")) {
@@ -87,6 +88,33 @@ export default function LessonPage() {
     );
   };
 
+  const HandleCodyAi = async (prompt: string | undefined) => {
+    if (!prompt) {
+      return;
+    }
+    const response = await fetch(`${API_BASE_URL}/api/codyAi`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        lesson: {
+          name: lesson?.name,
+          assignment: lesson?.assignment,
+          content: lesson?.content,
+          userCode: userCode,
+        },
+        prompt: prompt,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    const parsedResponse = await response.json();
+    setAiResponse(parsedResponse);
+  };
+
   return (
     <div className="h-screen overflow-hidden bg-gray-950 flex flex-col">
       <Navbar />
@@ -104,6 +132,28 @@ export default function LessonPage() {
           <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5">
             <h2 className="font-semibold text-white mb-2">Hints</h2>
             <p className="text-gray-300 text-sm">{lesson?.hints}</p>
+          </div>
+          <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5">
+            <h2 className="font-semibold text-white mb-4">كودي AI</h2>
+            <div className="flex gap-2 mt-4">
+              <input
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white"
+                placeholder="اسأل كودي..."
+              />
+              {aiResponse && (
+                <div className="mt-4 text-gray-300 text-sm whitespace-pre-wrap">
+                  {aiResponse}
+                </div>
+              )}
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded-md"
+                onClick={() => HandleCodyAi(prompt)}
+              >
+                إرسال
+              </button>
+            </div>
           </div>
         </div>
 
