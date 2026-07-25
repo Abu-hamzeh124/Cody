@@ -160,6 +160,12 @@ app.post(
   },
 );
 
+app.post("/api/makeadmin", async (req, res) => {
+  const { email } = req.body;
+  await db.update(users).set({ isAdmin: 1 }).where(eq(users.email, email));
+  res.status(200).send("done");
+});
+
 app.listen(PORT, () => {
   console.log(`Server effectively running on port: ${PORT}`);
 });
