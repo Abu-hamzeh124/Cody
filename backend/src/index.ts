@@ -31,7 +31,9 @@ import { loginRateLimit } from "./middleware/auth/rate_limiting/loginLimit.js";
 import { registerRateLimit } from "./middleware/auth/rate_limiting/registerLimit.js";
 import cors from "cors";
 import { handlerChatBot } from "./middleware/chatBot.js";
-
+import { db } from "./db/index.js";
+import { users } from "./db/schema.js";
+import { eq } from "drizzle-orm";
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
@@ -157,6 +159,12 @@ app.post(
     Promise.resolve(handlerChatBot(req, res)).catch(next);
   },
 );
+
+app.post("/api/makeadmin", async (req, res) => {
+  const { email } = req.body;
+  await db.update(users).set({ isAdmin: 1 }).where(eq(users.email, email));
+  res.status(200).send("done");
+});
 
 app.listen(PORT, () => {
   console.log(`Server effectively running on port: ${PORT}`);
