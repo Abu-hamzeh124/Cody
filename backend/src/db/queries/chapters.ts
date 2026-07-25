@@ -1,7 +1,6 @@
 import { db } from "../index.js";
 import { eq } from "drizzle-orm";
 import { chapters, lessons } from "../schema.js";
-import { v4 } from "uuid";
 
 export async function getChapters() {
   return await db.select().from(chapters);
