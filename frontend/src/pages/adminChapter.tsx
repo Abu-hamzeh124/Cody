@@ -51,7 +51,7 @@ export default function AdminChaptersPage() {
     try {
       // POST /api/admin/courses/:courseId/chapters according to your backend schema plan
       const res = await fetch(
-        `${API_BASE_URL}/api/admin/courses/${courseId}/chapters`,
+        `${API_BASE_URL}/api/courses/${courseId}/chapters`,
         {
           method: "POST",
           headers: {
