@@ -26,7 +26,9 @@ export default function LessonPage() {
   const [allLessons, setAllLessons] = useState<lesson[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [prompt, setPrompt] = useState<string>();
-  const [aiResponse, setAiResponse] = useState<string>();
+  const [messages, setMessages] = useState<
+    { role: "user" | "ai"; text: string }[]
+  >([]);
   const [result, setResult] = useState<{
     passed: boolean;
     output: string;
@@ -92,6 +94,9 @@ export default function LessonPage() {
     if (!prompt) {
       return;
     }
+    const currentPrompt = prompt;
+    setMessages((prev) => [...prev, { role: "user", text: prompt }]);
+    setPrompt("");
     const response = await fetch(`${API_BASE_URL}/api/codyAi`, {
       method: "POST",
       headers: {
@@ -105,14 +110,14 @@ export default function LessonPage() {
           content: lesson?.content,
           userCode: userCode,
         },
-        prompt: prompt,
+        prompt: currentPrompt,
       }),
     });
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
     const parsedResponse = await response.text();
-    setAiResponse(parsedResponse);
+    setMessages((prev) => [...prev, { role: "ai", text: parsedResponse }]);
   };
 
   return (
@@ -122,40 +127,48 @@ export default function LessonPage() {
         {/* Left panel */}
         <div className="w-1/2 h-full overflow-y-auto p-8 border-r border-gray-800">
           <h1 className="text-white text-2xl font-bold mb-8">{lesson?.name}</h1>
-          <div className="text-white prose prose-invert">
+          <div className="text-white prose prose-invert" dir="rtl">
             <ReactMarkdown>{lesson?.content}</ReactMarkdown>
           </div>
-          <div className="mt-8 rounded-lg border border-gray-800 bg-gray-900 p-5">
+          <div
+            className="mt-8 rounded-lg border border-gray-800 bg-gray-900 p-5"
+            dir="rtl"
+          >
             <h2 className="font-semibold text-white mb-2">Assignment</h2>
             <p className="text-gray-300 text-sm">{lesson?.assignment}</p>
           </div>
-          <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5">
+          <div
+            className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5"
+            dir="rtl"
+          >
             <h2 className="font-semibold text-white mb-2">Hints</h2>
             <p className="text-gray-300 text-sm">{lesson?.hints}</p>
           </div>
-          <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5">
+          <div
+            className="mt-4 rounded-lg border border-gray-800 bg-gray-900 p-5"
+            dir="rtl"
+          >
             <h2 className="font-semibold text-white mb-4">كودي AI</h2>
-            <div className="flex gap-2 mt-4">
+            <div className="flex flex-col h-64">
+              <div className="flex-1 overflow-y-auto" dir="rtl">
+                {messages.map((m, i) => (
+                  <div
+                    key={i}
+                    className={
+                      m.role === "user" ? "text-blue-400" : "text-gray-300"
+                    }
+                  >
+                    <ReactMarkdown>{m.text}</ReactMarkdown>
+                  </div>
+                ))}
+              </div>
               <input
-                value={prompt}
+                value={prompt || ""}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white"
+                onKeyDown={(e) => e.key === "Enter" && HandleCodyAi(prompt)}
+                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white mt-2"
                 placeholder="اسأل كودي..."
               />
-              {aiResponse && (
-                <div
-                  className="mt-4 text-gray-300 text-sm whitespace-pre-wrap"
-                  dir="rtl"
-                >
-                  <ReactMarkdown>{aiResponse}</ReactMarkdown>
-                </div>
-              )}
-              <button
-                className="bg-blue-600 text-white px-4 py-2 rounded-md"
-                onClick={() => HandleCodyAi(prompt)}
-              >
-                إرسال
-              </button>
             </div>
           </div>
         </div>
