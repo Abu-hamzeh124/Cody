@@ -73,7 +73,7 @@ export default function AdminCoursePage() {
     e.preventDefault();
 
     try {
-      const res = await fetch(`http://localhost:3000/api/courses`, {
+      const res = await fetch(`${API_BASE_URL}/api/courses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,8 +119,6 @@ export default function AdminCoursePage() {
       <Navbar />
       <div className="p-8">
         <h1 className="text-white text-3xl font-bold mb-8">Courses</h1>
-
-        {/* Course Creation UI Card */}
         <div className="max-w-3xl mx-auto bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
           {!isAdding ? (
             <div className="flex justify-between items-center">
@@ -171,8 +169,6 @@ export default function AdminCoursePage() {
                   onChange={(e) => setNewLanguage(e.target.value)}
                 >
                   <option value="Python">Python</option>
-                  <option value="JavaScript">JavaScript</option>
-                  <option value="TypeScript">TypeScript</option>
                 </select>
               </div>
 
