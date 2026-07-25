@@ -1,42 +1,50 @@
-import { sqliteTable, text, integer, unique } from "drizzle-orm/sqlite-core";
+import {
+  pgTable,
+  text,
+  integer,
+  unique,
+  uuid,
+  timestamp,
+  boolean,
+} from "drizzle-orm/pg-core";
 
-export const users = sqliteTable("users", {
-  id: text("id").primaryKey().notNull().unique(),
+export const users = pgTable("users", {
+  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
   email: text("email").notNull().unique(),
   hashedPassword: text("hashed_password").notNull(),
-  isAdmin: integer("is_admin"),
-  createdAt: integer("created_at")
+  isAdmin: boolean("is_admin"),
+  createdAt: timestamp("created_at")
     .notNull()
-    .$defaultFn(() => Date.now()),
-  updatedAt: integer("updated_at"),
+    .$defaultFn(() => new Date(Date.now())),
+  updatedAt: timestamp("updated_at"),
 });
 
-export const courses = sqliteTable("courses", {
-  id: text("id").primaryKey().notNull().unique(),
+export const courses = pgTable("courses", {
+  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
   name: text("name").notNull().unique(),
   description: text("description").notNull(),
   language: text("language").notNull().default("Python"),
-  createdAt: integer("created_at")
+  createdAt: timestamp("created_at")
     .notNull()
-    .$defaultFn(() => Date.now()),
-  updatedAt: integer("updated_at"),
+    .$defaultFn(() => new Date(Date.now())),
+  updatedAt: timestamp("updated_at"),
 });
 
-export const chapters = sqliteTable("chapters", {
-  id: text("id").primaryKey().notNull().unique(),
+export const chapters = pgTable("chapters", {
+  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
   name: text("name").notNull(),
   order: integer("order").notNull(),
-  createdAt: integer("created_at")
+  createdAt: timestamp("created_at")
     .notNull()
-    .$defaultFn(() => Date.now()),
-  updatedAt: integer("updated_at"),
-  courseId: text("course_id")
+    .$defaultFn(() => new Date(Date.now())),
+  updatedAt: timestamp("updated_at"),
+  courseId: uuid("course_id")
     .references(() => courses.id)
     .notNull(),
 });
 
-export const lessons = sqliteTable("lessons", {
-  id: text("id").primaryKey().notNull().unique(),
+export const lessons = pgTable("lessons", {
+  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
   name: text("name").notNull(),
   description: text("description").notNull(),
   content: text("content"),
@@ -44,46 +52,40 @@ export const lessons = sqliteTable("lessons", {
   testCode: text("test_code").notNull(),
   assignment: text("assignment").notNull(),
   order: integer("order").notNull(),
-  createdAt: integer("created_at")
+  createdAt: timestamp("created_at")
     .notNull()
-    .$defaultFn(() => Date.now()),
-  updatedAt: integer("updated_at"),
-  chapterId: text("chapter_id")
+    .$defaultFn(() => new Date(Date.now())),
+  updatedAt: timestamp("updated_at"),
+  chapterId: uuid("chapter_id")
     .references(() => chapters.id)
     .notNull(),
 });
 
-export const userProgress = sqliteTable(
+export const userProgress = pgTable(
   "user_progress",
   {
-    id: text("id").primaryKey().notNull().unique(),
-    userId: text("user_id")
+    id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
+    userId: uuid("user_id")
       .references(() => users.id)
       .notNull(),
-    lessonId: text("lesson_id")
+    lessonId: uuid("lesson_id")
       .references(() => lessons.id)
       .notNull(),
-    completed: integer("completed").notNull(),
-    completedAt: integer("completed_at"),
+    completed: boolean("completed").notNull(),
+    completedAt: timestamp("completed_at"),
   },
   (table) => ({
     userLessonUnique: unique().on(table.userId, table.lessonId),
   }),
 );
 
-export const refreshToken = sqliteTable("refreshToken", {
-  id: text("id").primaryKey().notNull().unique(),
+export const refreshToken = pgTable("refreshToken", {
+  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
   token: text("token").notNull().unique(),
-  userId: text("user_id")
+  userId: uuid("user_id")
     .references(() => users.id)
     .notNull(),
-  createdAt: integer("created_at").notNull(),
-  expiresIn: integer("expires_in").notNull(),
-  revoked: integer("revoked"),
+  createdAt: timestamp("created_at").notNull(),
+  expiresIn: timestamp("expires_in").notNull(),
+  revoked: boolean("revoked"),
 });
-
-export type User = typeof users.$inferSelect;
-export type Course = typeof courses.$inferSelect;
-export type Chapter = typeof chapters.$inferSelect;
-export type Lesson = typeof lessons.$inferSelect;
-export type progress = typeof userProgress.$inferSelect;

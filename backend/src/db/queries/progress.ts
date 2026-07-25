@@ -1,4 +1,3 @@
-import { v4 } from "uuid";
 import { db } from "../index.js";
 import { userProgress } from "../schema.js";
 import { eq } from "drizzle-orm";
@@ -13,11 +12,10 @@ export async function getProgress(userId: string) {
 
 export async function createProgress(userId: string, lessonId: string) {
   const resp = await db.insert(userProgress).values({
-    id: v4(),
     userId: userId,
     lessonId: lessonId,
-    completed: 1,
-    completedAt: Date.now(),
+    completed: true,
+    completedAt: new Date(),
   }).returning();
   return resp;
 }

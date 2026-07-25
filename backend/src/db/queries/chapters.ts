@@ -1,7 +1,6 @@
 import { db } from "../index.js";
 import { eq } from "drizzle-orm";
 import { chapters, lessons } from "../schema.js";
-import { GelDateDurationBuilder } from "drizzle-orm/gel-core";
 import { v4 } from "uuid";
 
 export async function getChapters() {
@@ -20,7 +19,6 @@ export async function createChapter(
   return await db
     .insert(chapters)
     .values({
-      id: v4(),
       name: name,
       order: order,
       courseId: courseId,
