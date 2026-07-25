@@ -58,7 +58,7 @@ export default function AdminLessonsPage() {
 
     try {
       const res = await fetch(
-        `${API_BASE_URL}/api/courses//${courseId}/chapters/${chapterId}`,
+        `${API_BASE_URL}/api/courses/${courseId}/chapters/${chapterId}`,
         {
           method: "POST",
           headers: {
