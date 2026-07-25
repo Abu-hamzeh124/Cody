@@ -19,7 +19,7 @@ export async function handlerChatBot(req: Request, res: Response) {
   try {
     const parsedReq = Parameters.parse(req.body);
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: [
         `You are a coding tutor helping a student with this lesson:
 Lesson: ${parsedReq.lesson.name}
