@@ -59,7 +59,7 @@ export async function handlerRefresh(req: Request, res: Response) {
   try {
     const parsedReq = parameters.parse(req.body);
     const [token] = await getToken(parsedReq.token);
-    if (!token || token.revoked || token.expiresIn < Date.now()) {
+    if (!token || token.revoked || token.expiresIn < new Date(Date.now())) {
       res.status(403).send("Invalid token");
     } else {
       const isAdmin = (await getUser(token.userId)).isAdmin;
