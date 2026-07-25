@@ -111,7 +111,7 @@ export default function LessonPage() {
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
-    const parsedResponse = await response.json();
+    const parsedResponse = await response.text();
     setAiResponse(parsedResponse);
   };
 
