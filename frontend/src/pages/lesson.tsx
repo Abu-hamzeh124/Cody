@@ -143,8 +143,11 @@ export default function LessonPage() {
                 placeholder="اسأل كودي..."
               />
               {aiResponse && (
-                <div className="mt-4 text-gray-300 text-sm whitespace-pre-wrap">
-                  {aiResponse}
+                <div
+                  className="mt-4 text-gray-300 text-sm whitespace-pre-wrap"
+                  dir="rtl"
+                >
+                  <ReactMarkdown>{aiResponse}</ReactMarkdown>
                 </div>
               )}
               <button
