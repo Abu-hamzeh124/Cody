@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
+  id: uuid("id").defaultRandom().primaryKey().notNull(),
   email: text("email").notNull().unique(),
   hashedPassword: text("hashed_password").notNull(),
   isAdmin: boolean("is_admin"),
@@ -20,7 +20,7 @@ export const users = pgTable("users", {
 });
 
 export const courses = pgTable("courses", {
-  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
+  id: uuid("id").defaultRandom().primaryKey().notNull(),
   name: text("name").notNull().unique(),
   description: text("description").notNull(),
   language: text("language").notNull().default("Python"),
@@ -31,7 +31,7 @@ export const courses = pgTable("courses", {
 });
 
 export const chapters = pgTable("chapters", {
-  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
+  id: uuid("id").defaultRandom().primaryKey().notNull(),
   name: text("name").notNull(),
   order: integer("order").notNull(),
   createdAt: timestamp("created_at")
@@ -44,7 +44,7 @@ export const chapters = pgTable("chapters", {
 });
 
 export const lessons = pgTable("lessons", {
-  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
+  id: uuid("id").defaultRandom().primaryKey().notNull(),
   name: text("name").notNull(),
   description: text("description").notNull(),
   content: text("content"),
@@ -64,7 +64,7 @@ export const lessons = pgTable("lessons", {
 export const userProgress = pgTable(
   "user_progress",
   {
-    id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
+    id: uuid("id").defaultRandom().primaryKey().notNull(),
     userId: uuid("user_id")
       .references(() => users.id)
       .notNull(),
@@ -80,7 +80,7 @@ export const userProgress = pgTable(
 );
 
 export const refreshToken = pgTable("refreshToken", {
-  id: uuid("id").defaultRandom().primaryKey().notNull().unique(),
+  id: uuid("id").defaultRandom().primaryKey().notNull(),
   token: text("token").notNull().unique(),
   userId: uuid("user_id")
     .references(() => users.id)
