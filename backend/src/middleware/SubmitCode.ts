@@ -35,7 +35,7 @@ export async function handlerExecCode(req: Request, res: Response) {
     }
     const testCode = (await getLesson(parsedReq.lessonId)).testCode;
     const zipBase64 = await createZipBase64(parsedReq.userCode, testCode);
-    const response = await fetch("https://ce.judge0.com/submissions", {
+    const response = await fetch("https://ce.judge0.com/submissions?wait=true", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
