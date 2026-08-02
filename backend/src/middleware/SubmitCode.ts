@@ -47,11 +47,15 @@ export async function handlerExecCode(req: Request, res: Response) {
     if (!response.ok) {
       res.status(500).send("something went wrong");
     } else {
-      const output: any = await response.json();
-      res.status(200).send({
-        passed: !output.stderr && output.status?.id === 3,
-        output: output.stdout,
-      });
+      if (!testCode || testCode.trim() === "#Nothing") {
+        res.status(200).send({ passed: true, output: "لا يوجد تحدي برمجي في هذا الدرس" });
+      } else {
+        const output: any = await response.json();
+        res.status(200).send({
+          passed: !output.stderr && output.status?.id === 3,
+          output: output.stdout,
+        });
+      }
     }
   } catch (error) {
     if (error instanceof ZodError) {
