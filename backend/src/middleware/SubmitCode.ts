@@ -3,6 +3,7 @@ import { getLesson } from "../db/queries/lessons.js";
 import z, { ZodError } from "zod";
 import { ZipArchive } from "archiver";
 import { Buffer } from "buffer";
+import fs from "fs";
 
 async function createZipBase64(
   userCode: string,
@@ -10,14 +11,14 @@ async function createZipBase64(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    const archive = ZipArchive("zip");
+    const archive = new ZipArchive("zip");
 
     archive.on("data", (chunk: Buffer) => chunks.push(chunk));
     archive.on("end", () => resolve(Buffer.concat(chunks).toString("base64")));
     archive.on("error", reject);
 
-    archive.append(userCode, { name: "main.py" });
-    archive.append(testCode, { name: "test.py" });
+    archive.append(fs.createReadStream(userCode), { name: "main.py" });
+    archive.append(fs.createReadStream(testCode), { name: "test.py" });
     archive.finalize();
   });
 }
