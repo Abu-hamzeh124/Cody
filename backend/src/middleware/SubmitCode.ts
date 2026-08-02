@@ -3,7 +3,8 @@ import { getLesson } from "../db/queries/lessons.js";
 import z, { ZodError } from "zod";
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const archiver = require('archiver');
+const archiverModule = require('archiver');
+const archiver = archiverModule.default || archiverModule;
 import { Buffer } from "buffer";
 
 async function createZipBase64(
