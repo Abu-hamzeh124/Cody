@@ -4,6 +4,8 @@ import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import Navbar from "../components/Navbar";
 import { API_BASE_URL } from "./login";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 type lesson = {
   id: string;
@@ -128,7 +130,21 @@ export default function LessonPage() {
         <div className="w-1/2 h-full overflow-y-auto p-8 border-r border-gray-800">
           <h1 className="text-white text-2xl font-bold mb-8">{lesson?.name}</h1>
           <div className="text-white prose prose-invert" dir="rtl">
-            <ReactMarkdown>{lesson?.content}</ReactMarkdown>
+            <ReactMarkdown
+              components={{
+                code({ className, children }) {
+                  const language =
+                    className?.replace("language-", "") || "python";
+                  return (
+                    <SyntaxHighlighter style={vscDarkPlus} language={language}>
+                      {String(children)}
+                    </SyntaxHighlighter>
+                  );
+                },
+              }}
+            >
+              {lesson?.content}
+            </ReactMarkdown>
           </div>
           <div
             className="mt-8 rounded-lg border border-gray-800 bg-gray-900 p-5"
