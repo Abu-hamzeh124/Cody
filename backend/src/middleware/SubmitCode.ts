@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
 import { getLesson } from "../db/queries/lessons.js";
 import z, { ZodError } from "zod";
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const archiverModule = require('archiver');
-const archiver = archiverModule.default || archiverModule;
+import { ZipArchive } from "archiver";
 import { Buffer } from "buffer";
 
 async function createZipBase64(
@@ -13,7 +10,7 @@ async function createZipBase64(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    const archive = archiver("zip");
+    const archive = ZipArchive("zip");
 
     archive.on("data", (chunk: Buffer) => chunks.push(chunk));
     archive.on("end", () => resolve(Buffer.concat(chunks).toString("base64")));
