@@ -17,8 +17,8 @@ async function createZipBase64(
     archive.on("end", () => resolve(Buffer.concat(chunks).toString("base64")));
     archive.on("error", reject);
 
-    archive.append(fs.createReadStream(userCode), { name: "main.py" });
-    archive.append(fs.createReadStream(testCode), { name: "test.py" });
+    archive.append(userCode, { name: "main.py" });
+    archive.append(testCode, { name: "test.py" });
     archive.finalize();
   });
 }
