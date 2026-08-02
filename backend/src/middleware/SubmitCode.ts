@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { getLesson } from "../db/queries/lessons.js";
 import z, { ZodError } from "zod";
-import archiver from "archiver";
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const archiver = require('archiver');
 import { Buffer } from "buffer";
 
 async function createZipBase64(
