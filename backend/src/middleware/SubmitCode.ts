@@ -3,7 +3,6 @@ import { getLesson } from "../db/queries/lessons.js";
 import z, { ZodError } from "zod";
 import { ZipArchive } from "archiver";
 import { Buffer } from "buffer";
-import fs from "fs";
 
 async function createZipBase64(
   userCode: string,
@@ -53,7 +52,7 @@ export async function handlerExecCode(req: Request, res: Response) {
         const output: any = await response.json();
         res.status(200).send({
           passed: !output.stderr && output.status?.id === 3,
-          output: output.stdout,
+          output: output.stdout || output.stderr || output.compile_output,
         });
       }
     }
