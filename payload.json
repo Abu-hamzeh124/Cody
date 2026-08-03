@@ -1,0 +1,4 @@
+{
+  "lessonId": "8ddbcf0a-1516-4ed6-882c-b1cf6d053c0b",
+  "testCode": "import subprocess\nresult = subprocess.run(['python3', 'main.py'], capture_output=True, text=True)\nassert result.stdout.strip() == 'hello world', f\"Expected 'hello world' but got '{result.stdout.strip()}'\"\nprint('Tests passed!')"
+}

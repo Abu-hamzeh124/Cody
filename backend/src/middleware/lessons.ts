@@ -77,18 +77,17 @@ export async function handlerCreateLesson(req: Request, res: Response) {
 
 export async function handlerUpdateLessons(req: Request, res: Response) {
   const Parameters = z.object({
-    name: z.string() || z.undefined(),
-    description: z.string() || z.undefined(),
-    content: z.string() || z.undefined(),
-    hints: z.string() || z.undefined(),
-    testCode: z.string() || z.undefined(),
-    assignment: z.string() || z.undefined(),
-    order: z.number() || z.undefined(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    content: z.string().optional(),
+    hints: z.string().optional(),
+    testCode: z.string().optional(),
+    assignment: z.string().optional(),
+    order: z.number().optional(),
   });
 
   try {
     const chapterId = req.params["chapterId"] as string;
-    const parsedReq = Parameters.parse(req.body);
     if (!chapterId) {
       res.status(400).send();
     } else {
