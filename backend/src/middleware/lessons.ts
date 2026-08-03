@@ -87,12 +87,12 @@ export async function handlerUpdateLessons(req: Request, res: Response) {
   });
 
   try {
-    const chapterId = req.params["chapterId"] as string;
-    if (!chapterId) {
+    const lessonId = req.params["lessonId"] as string;
+    if (!lessonId) {
       res.status(400).send();
     } else {
       const parsedBody = Parameters.parse(req.body);
-      const lesson = await updateLesson(parsedBody, chapterId);
+      const lesson = await updateLesson(parsedBody, lessonId);
       res.status(200).send(lesson);
     }
   } catch (error) {

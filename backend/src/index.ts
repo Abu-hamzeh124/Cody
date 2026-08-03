@@ -151,7 +151,7 @@ app.post(
 );
 
 app.post(
-  "/api/courses/:courseId/chapters/:chapterId/edit",
+  "/api/courses/:courseId/chapters/:chapterId/:lessonId",
   UserAuthentication,
   isAdmin,
   (req: Request, res: Response, next: NextFunction) => {

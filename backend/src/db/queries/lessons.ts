@@ -41,7 +41,11 @@ export async function updateLesson(
     assignment?: string;
     order?: number;
   },
-  chapterId: string,
+  lessonId: string,
 ) {
-  return await db.update(lessons).set(lesson).where(eq(lessons.chapterId, chapterId)).returning();
+  return await db
+    .update(lessons)
+    .set(lesson)
+    .where(eq(lessons.id, lessonId))
+    .returning();
 }
