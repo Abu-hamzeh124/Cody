@@ -12,8 +12,8 @@ async function createZipBase64(
     const chunks: Buffer[] = [];
     const archive = new ZipArchive("zip");
     const runScript = `#!/bin/bash
-pip install pytest -q 2>/dev/null
-python -m pytest test.py -v`;
+pip3 install pytest -q 2>/dev/null
+python3 -m pytest test.py -v`;
 
     archive.on("data", (chunk: Buffer) => chunks.push(chunk));
     archive.on("end", () => resolve(Buffer.concat(chunks).toString("base64")));
