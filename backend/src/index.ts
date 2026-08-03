@@ -32,9 +32,6 @@ import { loginRateLimit } from "./middleware/auth/rate_limiting/loginLimit.js";
 import { registerRateLimit } from "./middleware/auth/rate_limiting/registerLimit.js";
 import cors from "cors";
 import { handlerChatBot } from "./middleware/chatBot.js";
-import { db } from "./db/index.js";
-import { users } from "./db/schema.js";
-import { eq } from "drizzle-orm";
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
