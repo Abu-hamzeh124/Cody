@@ -14,6 +14,7 @@ import {
   handlerCreateLesson,
   handlerGetLesson,
   handlerGetLessons,
+  handlerUpdateLessons,
 } from "./middleware/lessons.js";
 import {
   handlerGetProgress,
@@ -149,6 +150,15 @@ app.post(
   isAdmin,
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handlerCreateLesson(req, res)).catch(next);
+  },
+);
+
+app.post(
+  "/api/courses/:courseId/chapters/:chapterId/edit",
+  UserAuthentication,
+  isAdmin,
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerUpdateLessons(req, res)).catch(next);
   },
 );
 

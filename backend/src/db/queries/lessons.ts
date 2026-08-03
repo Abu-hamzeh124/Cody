@@ -30,3 +30,18 @@ export async function createLesson(
     chapterId: chapterId,
   });
 }
+
+export async function updateLesson(
+  lesson: {
+    name?: string;
+    description?: string;
+    content?: string;
+    hints?: string;
+    testCode?: string;
+    assignment?: string;
+    order?: number;
+  },
+  chapterId: string,
+) {
+  return await db.update(lessons).set(lesson).where(eq(lessons.chapterId, chapterId));
+}

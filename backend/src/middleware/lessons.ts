@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { createLesson, getLesson } from "../db/queries/lessons.js";
+import {
+  createLesson,
+  getLesson,
+  updateLesson,
+} from "../db/queries/lessons.js";
 import { getCourse } from "../db/queries/courses.js";
 import { getChapter } from "../db/queries/chapters.js";
 import z from "zod";
@@ -60,6 +64,36 @@ export async function handlerCreateLesson(req: Request, res: Response) {
     } else {
       const parsedBody = Parameters.parse(req.body);
       const lesson = await createLesson(parsedBody, chapterId);
+      res.status(200).send(lesson);
+    }
+  } catch (error) {
+    if (error instanceof Database.SqliteError) {
+      res.status(409).send(error.message);
+    } else {
+      throw error;
+    }
+  }
+}
+
+export async function handlerUpdateLessons(req: Request, res: Response) {
+  const Parameters = z.object({
+    name: z.string() || z.undefined(),
+    description: z.string() || z.undefined(),
+    content: z.string() || z.undefined(),
+    hints: z.string() || z.undefined(),
+    testCode: z.string() || z.undefined(),
+    assignment: z.string() || z.undefined(),
+    order: z.number() || z.undefined(),
+  });
+
+  try {
+    const chapterId = req.params["chapterId"] as string;
+    const parsedReq = Parameters.parse(req.body);
+    if (!chapterId) {
+      res.status(400).send();
+    } else {
+      const parsedBody = Parameters.parse(req.body);
+      const lesson = await updateLesson(parsedBody, chapterId);
       res.status(200).send(lesson);
     }
   } catch (error) {
