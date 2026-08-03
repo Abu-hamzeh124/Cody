@@ -43,5 +43,5 @@ export async function updateLesson(
   },
   chapterId: string,
 ) {
-  return await db.update(lessons).set(lesson).where(eq(lessons.chapterId, chapterId));
+  return await db.update(lessons).set(lesson).where(eq(lessons.chapterId, chapterId)).returning();
 }
