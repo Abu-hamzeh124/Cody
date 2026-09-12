@@ -89,3 +89,12 @@ export const refreshToken = pgTable("refreshToken", {
   expiresIn: timestamp("expires_in").notNull(),
   revoked: boolean("revoked"),
 });
+
+export const otpVerification = pgTable("otp_verification", {
+  id: uuid("id").defaultRandom().primaryKey().notNull(),
+  owner: text("owner")
+    .notNull()
+    .references(() => users.id),
+  expiry: text("expiry"),
+  token: text("token"),
+});
