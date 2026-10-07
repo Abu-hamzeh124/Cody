@@ -26,3 +26,11 @@ export async function getToken(token: string) {
     .from(refreshToken)
     .where(eq(refreshToken.token, token));
 }
+
+export async function revokeToken(token: string) {
+  return await db
+    .update(refreshToken)
+    .set({ revoked: true })
+    .where(eq(refreshToken.token, token))
+    .returning();
+}

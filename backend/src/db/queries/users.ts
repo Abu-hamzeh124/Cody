@@ -8,6 +8,11 @@ export async function getUser(email: string) {
   return resp;
 }
 
+export async function getUserById(id: string) {
+  const [resp] = await db.select().from(users).where(eq(users.id, id));
+  return resp;
+}
+
 export async function createUser(email: string, hashedPassword: string) {
   const resp = await db
     .insert(users)

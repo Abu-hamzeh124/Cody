@@ -23,6 +23,7 @@ import {
 } from "./middleware/progress.js";
 import {
   handlerRefresh,
+  handlerVerifyToken,
   isAdmin,
   UserAuthentication,
 } from "./middleware/auth/auth.js";
@@ -57,6 +58,14 @@ app.post(
 app.post("/api/refresh", (req: Request, res: Response, next: NextFunction) => {
   Promise.resolve(handlerRefresh(req, res)).catch(next);
 });
+
+app.get(
+  "/api/verify",
+  UserAuthentication,
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handlerVerifyToken(req, res)).catch(next);
+  },
+);
 
 app.get("/api/courses", (req: Request, res: Response, next: NextFunction) => {
   Promise.resolve(handlerGetCourses(req, res)).catch(next);

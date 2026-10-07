@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
 import z from "zod";
-import { getToken } from "../../db/queries/refreshToken.js";
+import { getToken, createToken, revokeToken } from "../../db/queries/refreshToken.js";
 import Database from "better-sqlite3";
-import { getUser } from "../../db/queries/users.js";
+import { getUserById } from "../../db/queries/users.js";
 
 dotenv.config();
 
@@ -42,7 +42,10 @@ export function UserAuthentication(
       res.status(403).send();
     } else {
       const auth1 = auth.split(" ")[1];
-      const token = jwt.verify(auth1, secret);
+      const token = jwt.verify(auth1, secret) as jwt.JwtPayload;
+      if (token.exp) {
+        
+      }
       (req as any).user = token;
       next();
     }
@@ -61,17 +64,35 @@ export async function handlerRefresh(req: Request, res: Response) {
     const [token] = await getToken(parsedReq.token);
     if (!token || token.revoked || token.expiresIn < new Date(Date.now())) {
       res.status(403).send("Invalid token");
-    } else {
-      const isAdmin = (await getUser(token.userId)).isAdmin;
-      res.status(200).send({
-        accessToken: genAccessToken(token.userId, Boolean(isAdmin)),
-      });
+      return;
     }
+
+    const user = await getUserById(token.userId);
+    if (!user) {
+      res.status(403).send("Invalid token");
+      return;
+    }
+
+    await revokeToken(token.token);
+    const [newToken] = await createToken(token.userId);
+
+    res.status(200).send({
+      accessToken: genAccessToken(token.userId, Boolean(user.isAdmin)),
+      refreshToken: newToken.token,
+    });
   } catch (error) {
-    if (error instanceof Database.SqliteError) {
+    if (error instanceof z.ZodError) {
+      res.status(400).send();
+    } else if (error instanceof Database.SqliteError) {
       res.status(403).send(error.message);
+    } else {
+      throw error;
     }
   }
+}
+
+export async function handlerVerifyToken(req: Request, res: Response) {
+  res.status(200).send();
 }
 
 export async function isAdmin(req: Request, res: Response, next: NextFunction) {
@@ -80,11 +101,10 @@ export async function isAdmin(req: Request, res: Response, next: NextFunction) {
     if (!auth) {
       res.status(403).send();
     } else {
-      const token = auth.split(" ")[1];
-      const payload = JSON.parse(
-        Buffer.from(token.split(".")[1], "base64").toString(),
-      );
-      if (!payload.isAdmin) {
+      const auth1 = auth.split(" ")[1];
+      const token = jwt.verify(auth1, secret) as jwt.JwtPayload;
+      const user = await getUserById(token.userID);
+      if (!user || !user.isAdmin) {
         res.status(403).send();
       } else {
         next();

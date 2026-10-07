@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import Navbar from "../components/Navbar";
 import { API_BASE_URL } from "./login";
+import { ensureValidSession } from "../lib/auth";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -37,20 +38,22 @@ export default function LessonPage() {
   } | null>(null);
   const { courseId, lessonId } = useParams();
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/");
-      return;
-    }
-    fetch(`${API_BASE_URL}/api/courses/${courseId}/lessons`)
-      .then((res) => res.json())
-      .then((data) => {
-        setAllLessons(data);
-        const index = data.findIndex((les: lesson) => les.id === lessonId);
-        setCurrentIndex(index);
-        setLesson(data[index]);
-        setResult(null);
-        setCode("# Write your code here");
-      });
+    ensureValidSession().then((valid) => {
+      if (!valid) {
+        navigate("/");
+        return;
+      }
+      fetch(`${API_BASE_URL}/api/courses/${courseId}/lessons`)
+        .then((res) => res.json())
+        .then((data) => {
+          setAllLessons(data);
+          const index = data.findIndex((les: lesson) => les.id === lessonId);
+          setCurrentIndex(index);
+          setLesson(data[index]);
+          setResult(null);
+          setCode("# Write your code here");
+        });
+    });
   }, [lessonId]);
 
   const handleSubmit = async () => {

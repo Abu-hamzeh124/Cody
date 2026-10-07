@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoBackground from "../components/LogoBackground";
 import logo_small from "../assets/logo_small.png";
+import { ensureValidSession } from "../lib/auth";
+import { API_BASE_URL } from "../lib/api";
 
-export const API_BASE_URL = `https://cody-backend-ifx3.onrender.com`;  
+export { API_BASE_URL } from "../lib/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -11,6 +13,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState<Boolean>();
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    ensureValidSession().then((valid) => {
+      if (valid) {
+        navigate("/courses");
+      }
+    });
+  }, [navigate]);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -29,6 +39,7 @@ export default function LoginPage() {
     console.log("login response:", text);
     const data = JSON.parse(text);
     localStorage.setItem("token", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
     setLoading(false);
     navigate("/courses");
   };

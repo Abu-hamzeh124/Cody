@@ -1,4 +1,5 @@
 import { createUser, getUser } from "../db/queries/users.js";
+import { createToken } from "../db/queries/refreshToken.js";
 import { Request, Response } from "express";
 import { hashPassword, genAccessToken } from "./auth/auth.js";
 import Database from "better-sqlite3";
@@ -18,8 +19,10 @@ export async function handlerCreateUser(req: Request, res: Response) {
     const parsedReq = parameters.parse(req.body);
     const hashedPassword = await hashPassword(parsedReq.password);
     const [user] = await createUser(parsedReq.email, hashedPassword);
+    const [refreshToken] = await createToken(user.id);
     res.status(201).send({
       accessToken: genAccessToken(user.id, false),
+      refreshToken: refreshToken.token,
     });
   } catch (error) {
     if (error instanceof Database.SqliteError) {
@@ -45,8 +48,10 @@ export async function handlerLogin(req: Request, res: Response) {
       res.status(404).send("Invalid email");
     } else {
       if (await argon.verify(user.hashedPassword, parsedReq.password)) {
+        const [refreshToken] = await createToken(user.id);
         res.status(200).send({
           accessToken: genAccessToken(user.id, Boolean(user.isAdmin)),
+          refreshToken: refreshToken.token,
         });
       } else {
         res.status(403).send("Invalid password");
@@ -55,8 +60,9 @@ export async function handlerLogin(req: Request, res: Response) {
   } catch (error) {
     if (error instanceof ZodError) {
       res.status(400).send();
+    } else {
+      throw error;
     }
-    throw error;
   }
 }
 

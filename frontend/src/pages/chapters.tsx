@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { API_BASE_URL } from "./login";
+import { ensureValidSession } from "../lib/auth";
 
 type chapter = {
   id: string;
@@ -20,17 +21,19 @@ export default function ChaptersPage() {
   const { courseId } = useParams();
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/");
-      return;
-    }
-    setLoading(true);
-    fetch(`${API_BASE_URL}/api/courses/${courseId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setChapter(data);
-        setLoading(false);
-      });
+    ensureValidSession().then((valid) => {
+      if (!valid) {
+        navigate("/");
+        return;
+      }
+      setLoading(true);
+      fetch(`${API_BASE_URL}/api/courses/${courseId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setChapter(data);
+          setLoading(false);
+        });
+    });
   }, []);
 
   const handleChapter = (id: string) => {

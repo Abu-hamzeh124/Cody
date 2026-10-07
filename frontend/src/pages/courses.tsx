@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { API_BASE_URL } from "./login";
+import { ensureValidSession } from "../lib/auth";
 
 type Course = {
   id: string;
@@ -17,47 +18,47 @@ export default function CoursePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("courses useEffect running");
-    if (!localStorage.getItem("token")) {
-      navigate("/");
-      return;
-    }
-    setLoading(true);
-    fetch(`${API_BASE_URL}/api/courses`)
-      .then((res) => res.json())
-      .then((data) => {
-        setCourses(data);
-        Promise.all(
-          data.map((course: Course) =>
-            fetch(`${API_BASE_URL}/api/progress/course/${course.id}`, {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            })
-              .then((res) => res.json())
-              .then((progress) => {
-                console.log("progress response:", progress);
-                setCourses((prev) =>
-                  prev.map((c) =>
-                    c.id === course.id
-                      ? {
-                          ...c,
-                          progress: Math.min(
-                            (progress.progressCount / progress.lessonCount) *
+    ensureValidSession().then((valid) => {
+      if (!valid) {
+        navigate("/");
+        return;
+      }
+      setLoading(true);
+      fetch(`${API_BASE_URL}/api/courses`)
+        .then((res) => res.json())
+        .then((data) => {
+          setCourses(data);
+          Promise.all(
+            data.map((course: Course) =>
+              fetch(`${API_BASE_URL}/api/progress/course/${course.id}`, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              })
+                .then((res) => res.json())
+                .then((progress) => {
+                  setCourses((prev) =>
+                    prev.map((c) =>
+                      c.id === course.id
+                        ? {
+                            ...c,
+                            progress: Math.min(
+                              (progress.progressCount /
+                                progress.lessonCount) *
+                                100,
                               100,
-                            100,
-                          ),
-                        }
-                      : c,
-                  ),
-                );
-              }),
-          ),
-        ).then(() => {
-          console.log("i am ibrahim");
-          setLoading(false);
+                            ),
+                          }
+                        : c,
+                    ),
+                  );
+                }),
+            ),
+          ).then(() => {
+            setLoading(false);
+          });
         });
-      });
+    });
   }, []);
 
   const handleCourse = (id: string) => {

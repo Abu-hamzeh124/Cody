@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { API_BASE_URL } from "./login";
+import { ensureValidSession } from "../lib/auth";
 
 type Chapter = {
   id: string;
@@ -22,23 +23,25 @@ export default function AdminChaptersPage() {
   const [newOrder, setNewOrder] = useState<number>(1);
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/");
-      return;
-    }
+    ensureValidSession().then((valid) => {
+      if (!valid) {
+        navigate("/");
+        return;
+      }
 
-    setLoading(true);
-    // GET /api/courses/:courseId returns chapters sorted by order
-    fetch(`${API_BASE_URL}/api/courses/${courseId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setChapters(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching chapters:", err);
-        setLoading(false);
-      });
+      setLoading(true);
+      // GET /api/courses/:courseId returns chapters sorted by order
+      fetch(`${API_BASE_URL}/api/courses/${courseId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setChapters(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching chapters:", err);
+          setLoading(false);
+        });
+    });
   }, [courseId, navigate]);
 
   const handleChapterClick = (chapterId: string) => {

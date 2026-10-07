@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { API_BASE_URL } from "./login";
+import { ensureValidSession } from "../lib/auth";
 
 type lesson = {
   id: string;
@@ -24,17 +25,19 @@ export default function LessonsPage() {
   const [loading, setLoading] = useState<Boolean>();
   const { courseId, chapterId } = useParams();
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/");
-      return;
-    }
-    setLoading(true);
-    fetch(`${API_BASE_URL}/api/courses/${courseId}/chapters/${chapterId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setLesson(data);
-        setLoading(false);
-      });
+    ensureValidSession().then((valid) => {
+      if (!valid) {
+        navigate("/");
+        return;
+      }
+      setLoading(true);
+      fetch(`${API_BASE_URL}/api/courses/${courseId}/chapters/${chapterId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setLesson(data);
+          setLoading(false);
+        });
+    });
   }, []);
 
   const handleCourse = (id: string) => {

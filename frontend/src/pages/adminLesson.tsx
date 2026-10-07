@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { API_BASE_URL } from "./login";
+import { ensureValidSession } from "../lib/auth";
 
 type Lesson = {
   id: string;
@@ -35,22 +36,24 @@ export default function AdminLessonsPage() {
   const [newOrder, setNewOrder] = useState<number>(1);
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/");
-      return;
-    }
+    ensureValidSession().then((valid) => {
+      if (!valid) {
+        navigate("/");
+        return;
+      }
 
-    setLoading(true);
-    fetch(`${API_BASE_URL}/api/courses/${courseId}/chapters/${chapterId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setLessons(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching lessons:", err);
-        setLoading(false);
-      });
+      setLoading(true);
+      fetch(`${API_BASE_URL}/api/courses/${courseId}/chapters/${chapterId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setLessons(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching lessons:", err);
+          setLoading(false);
+        });
+    });
   }, [courseId, chapterId, navigate]);
 
   const handleAddLessonSubmit = async (e: React.FormEvent) => {
