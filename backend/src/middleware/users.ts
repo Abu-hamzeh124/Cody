@@ -2,12 +2,9 @@ import { createUser, getUser } from "../db/queries/users.js";
 import { createToken } from "../db/queries/refreshToken.js";
 import { Request, Response } from "express";
 import { hashPassword, genAccessToken } from "./auth/auth.js";
-import Database from "better-sqlite3";
+import { DatabaseError } from "pg";
 import * as argon from "argon2";
 import { z, ZodError } from "zod";
-import { db } from "../db/index.js";
-import { eq } from "drizzle-orm";
-import { users } from "../db/schema.js";
 
 export async function handlerCreateUser(req: Request, res: Response) {
   const parameters = z.object({
@@ -25,7 +22,7 @@ export async function handlerCreateUser(req: Request, res: Response) {
       refreshToken: refreshToken.token,
     });
   } catch (error) {
-    if (error instanceof Database.SqliteError) {
+    if (error instanceof DatabaseError) {
       res.status(409).send(error.message);
     } else if (error instanceof ZodError) {
       res.status(400).send();
