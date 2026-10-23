@@ -8,7 +8,7 @@ import {
   createToken,
   revokeToken,
 } from "../../db/queries/refreshToken.js";
-import Database from "better-sqlite3";
+import { DatabaseError } from "pg";
 import { getUserById } from "../../db/queries/users.js";
 
 dotenv.config();
@@ -88,7 +88,7 @@ export async function handlerRefresh(req: Request, res: Response) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).send();
-    } else if (error instanceof Database.SqliteError) {
+    } else if (error instanceof DatabaseError) {
       res.status(403).send(error.message);
     } else {
       throw error;
