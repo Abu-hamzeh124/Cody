@@ -3,7 +3,11 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
 import z from "zod";
-import { getToken, createToken, revokeToken } from "../../db/queries/refreshToken.js";
+import {
+  getToken,
+  createToken,
+  revokeToken,
+} from "../../db/queries/refreshToken.js";
 import Database from "better-sqlite3";
 import { getUserById } from "../../db/queries/users.js";
 
@@ -44,7 +48,8 @@ export function UserAuthentication(
       const auth1 = auth.split(" ")[1];
       const token = jwt.verify(auth1, secret) as jwt.JwtPayload;
       if (token.exp) {
-        
+        res.status(403).send("invalid user");
+        return;
       }
       (req as any).user = token;
       next();
@@ -104,7 +109,7 @@ export async function isAdmin(req: Request, res: Response, next: NextFunction) {
       const auth1 = auth.split(" ")[1];
       const token = jwt.verify(auth1, secret) as jwt.JwtPayload;
       const user = await getUserById(token.userID);
-      if (!user || !user.isAdmin) {
+      if (!user) {
         res.status(403).send();
       } else {
         next();

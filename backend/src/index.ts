@@ -39,141 +39,111 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors({ origin: "https://cody-learn.vercel.app" }));
 
+function mid(handler: (req: Request | any, res: Response | any) => Promise<any>): (req: Request, res: Response, next: NextFunction) => void {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(handler(req, res)).catch(next);
+  }
+}
+
 app.post(
   "/api/user",
   registerRateLimit,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerCreateUser(req, res)).catch(next);
-  },
+  mid(handlerCreateUser),
 );
 
 app.post(
   "/api/login",
   loginRateLimit,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerLogin(req, res)).catch(next);
-  },
+  mid(handlerLogin),
 );
 
-app.post("/api/refresh", (req: Request, res: Response, next: NextFunction) => {
-  Promise.resolve(handlerRefresh(req, res)).catch(next);
-});
+app.post("/api/refresh", mid(handlerRefresh));
 
 app.get(
   "/api/verify",
   UserAuthentication,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerVerifyToken(req, res)).catch(next);
-  },
+  mid(handlerVerifyToken),
 );
 
-app.get("/api/courses", (req: Request, res: Response, next: NextFunction) => {
-  Promise.resolve(handlerGetCourses(req, res)).catch(next);
-});
+app.get("/api/courses", mid(handlerGetCourses));
 
 app.get(
   "/api/courses/:courseId",
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerGetCourse(req, res)).catch(next);
-  },
+  mid(handlerGetCourse),
 );
 
 app.get(
   "/api/courses/:courseId/chapters/:chapterId",
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerGetChapter(req, res)).catch(next);
-  },
+  mid(handlerGetChapter),
 );
 
 app.get(
   "/api/courses/:courseId/chapters/:chapterId/lessons/:lessonId",
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerGetLesson(req, res)).catch(next);
-  },
+  mid(handlerGetLesson),
 );
 
 app.get(
   "/api/progress",
   UserAuthentication,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerGetProgress(req, res)).catch(next);
-  },
+  mid(handlerGetProgress),
 );
 
 app.get(
   "/api/progress/course/:courseId",
   UserAuthentication,
-  (req, res, next) => {
-    Promise.resolve(handlerGetCourseProgress(req, res)).catch(next);
-  },
+  mid(handlerGetCourseProgress),
 );
 
 app.get(
   "/api/courses/:courseId/lessons",
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerGetLessons(req, res)).catch(next);
-  },
+  mid(handlerGetLessons),
 );
 
 app.post(
   "/api/progress",
   UserAuthentication,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerCreateProgress(req, res)).catch(next);
-  },
+  mid(handlerCreateProgress),
 );
 
 app.post(
   "/api/submit",
   UserAuthentication,
   submitRateLimit,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerExecCode(req, res)).catch(next);
-  },
+  mid(handlerExecCode)
 );
 
 app.post(
   "/api/courses",
   UserAuthentication,
   isAdmin,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerCreateCourse(req, res)).catch(next);
-  },
+  mid(handlerCreateCourse),
 );
 
 app.post(
   "/api/courses/:courseId",
   UserAuthentication,
   isAdmin,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerCreateChapter(req, res)).catch(next);
-  },
+  mid(handlerCreateChapter),
 );
 
 app.post(
   "/api/courses/:courseId/chapters/:chapterId",
   UserAuthentication,
   isAdmin,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerCreateLesson(req, res)).catch(next);
-  },
+  mid(handlerCreateLesson),
 );
 
 app.post(
   "/api/courses/:courseId/chapters/:chapterId/:lessonId",
   UserAuthentication,
   isAdmin,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerUpdateLessons(req, res)).catch(next);
-  },
+  mid(handlerUpdateLessons),
 );
 
 app.post(
   "/api/codyAi",
   UserAuthentication,
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(handlerChatBot(req, res)).catch(next);
-  },
+  mid(handlerChatBot),
 );
 
 app.listen(PORT, () => {
