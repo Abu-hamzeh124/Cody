@@ -1,7 +1,7 @@
 import { getCourses, getCourse, createCourse } from "../db/queries/courses.js";
 import { Request, Response } from "express";
 import { z, ZodError } from "zod";
-import Database from "better-sqlite3";
+import { DatabaseError } from "pg";
 
 export async function handlerGetCourses(req: Request, res: Response) {
   try {
@@ -42,7 +42,7 @@ export async function handlerCreateCourse(req: Request, res: Response) {
     );
     res.status(200).send(course);
   } catch (error) {
-    if (error instanceof Database.SqliteError) {
+    if (error instanceof DatabaseError) {
       res.status(409).send(error.message);
     } else if (error instanceof ZodError) {
       res.status(400).send();

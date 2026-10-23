@@ -7,7 +7,7 @@ import {
 import { getCourse } from "../db/queries/courses.js";
 import { getChapter } from "../db/queries/chapters.js";
 import z from "zod";
-import Database from "better-sqlite3";
+import { DatabaseError } from "pg";
 
 export async function handlerGetLesson(req: Request, res: Response) {
   try {
@@ -67,7 +67,7 @@ export async function handlerCreateLesson(req: Request, res: Response) {
       res.status(200).send(lesson);
     }
   } catch (error) {
-    if (error instanceof Database.SqliteError) {
+    if (error instanceof DatabaseError) {
       res.status(409).send(error.message);
     } else {
       throw error;
@@ -96,7 +96,7 @@ export async function handlerUpdateLessons(req: Request, res: Response) {
       res.status(200).send(lesson);
     }
   } catch (error) {
-    if (error instanceof Database.SqliteError) {
+    if (error instanceof DatabaseError) {
       res.status(409).send(error.message);
     } else {
       throw error;

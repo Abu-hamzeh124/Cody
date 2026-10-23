@@ -1,7 +1,7 @@
 import z from "zod";
 import { createChapter, getChapter } from "../db/queries/chapters.js";
 import { Request, Response } from "express";
-import Database from "better-sqlite3";
+import { DatabaseError } from "pg";
 
 export async function handlerGetChapter(req: Request, res: Response) {
   try {
@@ -13,7 +13,7 @@ export async function handlerGetChapter(req: Request, res: Response) {
       res.status(200).send(chapter);
     }
   } catch (error) {
-    if (error instanceof Database.SqliteError) {
+    if (error instanceof DatabaseError) {
       res.status(409).send(error.message);
     } else {
       throw error;
@@ -41,7 +41,7 @@ export async function handlerCreateChapter(req: Request, res: Response) {
       res.status(200).send(chapter);
     }
   } catch (error) {
-    if (error instanceof Database.SqliteError) {
+    if (error instanceof DatabaseError) {
       res.status(409).send(error.message);
     } else {
       throw error;
